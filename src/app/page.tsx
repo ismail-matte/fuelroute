@@ -2,65 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import './fuelroute.css';
-
-// Car Models Database
-const carDatabase = [
-  { name: 'Toyota Corolla', type: 'petrol', consumption: 6.5, engine: 1.8 },
-  { name: 'Toyota Camry', type: 'petrol', consumption: 7.8, engine: 2.5 },
-  { name: 'Toyota Prius', type: 'hybrid', consumption: 4.3, engine: 1.8 },
-  { name: 'Honda Civic', type: 'petrol', consumption: 6.7, engine: 1.5 },
-  { name: 'Honda Accord', type: 'petrol', consumption: 7.5, engine: 2.0 },
-  { name: 'Ford Focus', type: 'petrol', consumption: 6.9, engine: 1.6 },
-  { name: 'Ford Mustang', type: 'petrol', consumption: 11.2, engine: 5.0 },
-  { name: 'Volkswagen Golf', type: 'petrol', consumption: 6.4, engine: 1.4 },
-  { name: 'Volkswagen Passat', type: 'diesel', consumption: 5.8, engine: 2.0 },
-  { name: 'BMW 3 Series', type: 'petrol', consumption: 7.2, engine: 2.0 },
-  { name: 'BMW 5 Series', type: 'diesel', consumption: 6.5, engine: 2.0 },
-  { name: 'Mercedes-Benz C-Class', type: 'petrol', consumption: 7.4, engine: 2.0 },
-  { name: 'Mercedes-Benz E-Class', type: 'diesel', consumption: 6.2, engine: 2.0 },
-  { name: 'Audi A4', type: 'petrol', consumption: 7.0, engine: 2.0 },
-  { name: 'Audi A6', type: 'diesel', consumption: 6.3, engine: 2.0 },
-  { name: 'Tesla Model 3', type: 'electric', consumption: 15.0, engine: 0 },
-  { name: 'Tesla Model S', type: 'electric', consumption: 18.0, engine: 0 },
-  { name: 'Tesla Model X', type: 'electric', consumption: 20.0, engine: 0 },
-  { name: 'Tesla Model Y', type: 'electric', consumption: 16.5, engine: 0 },
-  { name: 'Nissan Leaf', type: 'electric', consumption: 17.0, engine: 0 },
-  { name: 'Chevrolet Bolt', type: 'electric', consumption: 16.0, engine: 0 },
-  { name: 'Hyundai Ioniq', type: 'electric', consumption: 14.5, engine: 0 },
-  { name: 'Kia Niro EV', type: 'electric', consumption: 15.5, engine: 0 },
-  { name: 'Mazda 3', type: 'petrol', consumption: 6.6, engine: 2.0 },
-  { name: 'Mazda CX-5', type: 'petrol', consumption: 8.2, engine: 2.5 },
-  { name: 'Subaru Outback', type: 'petrol', consumption: 8.7, engine: 2.5 },
-  { name: 'Subaru Forester', type: 'petrol', consumption: 8.4, engine: 2.5 },
-  { name: 'Jeep Wrangler', type: 'petrol', consumption: 10.5, engine: 3.6 },
-  { name: 'Jeep Grand Cherokee', type: 'petrol', consumption: 11.0, engine: 3.6 },
-  { name: 'Range Rover Sport', type: 'diesel', consumption: 9.5, engine: 3.0 },
-  { name: 'Porsche 911', type: 'petrol', consumption: 10.8, engine: 3.0 },
-  { name: 'Lexus ES', type: 'hybrid', consumption: 5.8, engine: 2.5 },
-  { name: 'Lexus RX', type: 'hybrid', consumption: 7.2, engine: 3.5 }
-];
-
-// Cities Database
-const citiesDatabase = [
-  'New York, USA', 'Los Angeles, USA', 'Chicago, USA', 'Houston, USA', 'Phoenix, USA',
-  'London, UK', 'Manchester, UK', 'Birmingham, UK', 'Liverpool, UK', 'Edinburgh, UK',
-  'Paris, France', 'Lyon, France', 'Marseille, France', 'Nice, France', 'Toulouse, France',
-  'Berlin, Germany', 'Munich, Germany', 'Hamburg, Germany', 'Frankfurt, Germany', 'Cologne, Germany',
-  'Rome, Italy', 'Milan, Italy', 'Venice, Italy', 'Florence, Italy', 'Naples, Italy',
-  'Madrid, Spain', 'Barcelona, Spain', 'Valencia, Spain', 'Seville, Spain', 'Bilbao, Spain',
-  'Tokyo, Japan', 'Osaka, Japan', 'Kyoto, Japan', 'Yokohama, Japan', 'Nagoya, Japan',
-  'Beijing, China', 'Shanghai, China', 'Guangzhou, China', 'Shenzhen, China', 'Chengdu, China',
-  'Mumbai, India', 'Delhi, India', 'Bangalore, India', 'Hyderabad, India', 'Chennai, India',
-  'Sydney, Australia', 'Melbourne, Australia', 'Brisbane, Australia', 'Perth, Australia', 'Adelaide, Australia',
-  'Toronto, Canada', 'Vancouver, Canada', 'Montreal, Canada', 'Calgary, Canada', 'Ottawa, Canada',
-  'Dubai, UAE', 'Abu Dhabi, UAE', 'Sharjah, UAE', 'Ajman, UAE', 'Ras Al Khaimah, UAE',
-  'Johannesburg, South Africa', 'Cape Town, South Africa', 'Durban, South Africa', 'Pretoria, South Africa', 'Port Elizabeth, South Africa',
-  'Nairobi, Kenya', 'Mombasa, Kenya', 'Kisumu, Kenya', 'Nakuru, Kenya', 'Eldoret, Kenya',
-  'Lagos, Nigeria', 'Abuja, Nigeria', 'Kano, Nigeria', 'Ibadan, Nigeria', 'Port Harcourt, Nigeria',
-  'Cairo, Egypt', 'Alexandria, Egypt', 'Giza, Egypt', 'Luxor, Egypt', 'Aswan, Egypt',
-  'Singapore', 'Hong Kong', 'Seoul, South Korea', 'Bangkok, Thailand', 'Kuala Lumpur, Malaysia',
-  'Amsterdam, Netherlands', 'Brussels, Belgium', 'Vienna, Austria', 'Zurich, Switzerland', 'Stockholm, Sweden'
-];
+import { searchCars, type CarModel } from '../lib/carDatabase';
+import { detectUserLocation, type RegionalSettings } from '../lib/geolocation';
+import { searchCities, type City } from '../lib/locationService';
+import { saveCalculation, getHistory, deleteCalculation, formatDate, type CalculationHistory } from '../lib/historyManager';
+import { downloadImage, shareToWhatsApp, shareViaEmail } from '../lib/exportUtils';
 
 const currencySymbols: Record<string, string> = {
   'USD': '$', 'EUR': '€', 'GBP': '£', 'ZAR': 'R', 'AUD': 'A$',
@@ -80,19 +26,35 @@ export default function Home() {
   const [manualDistance, setManualDistance] = useState('');
   const [fuelPrice, setFuelPrice] = useState('1.50');
   const [currency, setCurrency] = useState('USD');
+  const [userRegion, setUserRegion] = useState<string>('global');
   
-  const [carSuggestions, setCarSuggestions] = useState<typeof carDatabase>([]);
-  const [fromSuggestions, setFromSuggestions] = useState<string[]>([]);
-  const [toSuggestions, setToSuggestions] = useState<string[]>([]);
-  const [viaSuggestions, setViaSuggestions] = useState<string[]>([]);
+  const [carSuggestions, setCarSuggestions] = useState<CarModel[]>([]);
+  const [fromSuggestions, setFromSuggestions] = useState<City[]>([]);
+  const [toSuggestions, setToSuggestions] = useState<City[]>([]);
+  const [viaSuggestions, setViaSuggestions] = useState<City[]>([]);
   
   const [results, setResults] = useState<any>(null);
+  const [history, setHistory] = useState<CalculationHistory[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
 
-  const consumptionUnit = vehicleType === 'electric'
+  const consumptionUnit = vehicleType === 'electric' 
     ? (distanceUnit === 'km' ? 'kWh/100km' : 'kWh/100mi')
     : (distanceUnit === 'km' ? 'L/100km' : 'MPG');
   
   const priceUnit = vehicleType === 'electric' ? 'kWh' : 'Liter';
+
+  // Auto-detect location on mount
+  useEffect(() => {
+    detectUserLocation().then((settings: RegionalSettings) => {
+      setCurrency(settings.currency);
+      setDistanceUnit(settings.distanceUnit);
+      setFuelPrice(settings.fuelPriceEstimate.toString());
+      setUserRegion(settings.region);
+    });
+    
+    // Load history
+    setHistory(getHistory());
+  }, []);
 
   // Auto-estimate consumption based on vehicle type and engine size
   const estimateConsumption = (vType: string, engine: string) => {
@@ -100,13 +62,13 @@ export default function Home() {
     let estimated = 0;
     
     if (vType === 'electric') {
-      estimated = 15.0; // Average EV consumption
+      estimated = 15.0;
     } else if (vType === 'diesel') {
-      estimated = 4.5 + (engineNum * 1.2); // Diesel formula
+      estimated = 4.5 + (engineNum * 1.2);
     } else if (vType === 'hybrid') {
-      estimated = 4.0 + (engineNum * 0.8); // Hybrid formula
-    } else { // petrol
-      estimated = 5.0 + (engineNum * 1.5); // Petrol formula
+      estimated = 4.0 + (engineNum * 0.8);
+    } else {
+      estimated = 5.0 + (engineNum * 1.5);
     }
     
     return estimated.toFixed(1);
@@ -114,7 +76,7 @@ export default function Home() {
 
   // Update consumption when vehicle type or engine size changes
   useEffect(() => {
-    if (!carModel) { // Only auto-estimate if no car model is selected
+    if (!carModel) {
       const estimated = estimateConsumption(vehicleType, engineSize);
       setFuelConsumption(estimated);
     }
@@ -126,13 +88,12 @@ export default function Home() {
       setCarSuggestions([]);
       return;
     }
-    const matches = carDatabase.filter(car => 
-      car.name.toLowerCase().includes(query.toLowerCase())
-    ).slice(0, 8);
+    // Filter by vehicle type and region
+    const matches = searchCars(query, vehicleType, userRegion);
     setCarSuggestions(matches);
   };
 
-  const selectCar = (car: typeof carDatabase[0]) => {
+  const selectCar = (car: CarModel) => {
     setCarModel(car.name);
     setVehicleType(car.type);
     setEngineSize(car.engine.toString());
@@ -140,14 +101,12 @@ export default function Home() {
     setCarSuggestions([]);
   };
 
-  const handleLocationSearch = (query: string, setter: (val: string[]) => void) => {
+  const handleLocationSearch = (query: string, setter: (val: City[]) => void) => {
     if (query.length < 2) {
       setter([]);
       return;
     }
-    const matches = citiesDatabase.filter(city => 
-      city.toLowerCase().includes(query.toLowerCase())
-    ).slice(0, 8);
+    const matches = searchCities(query);
     setter(matches);
   };
 
@@ -222,7 +181,7 @@ export default function Home() {
       }
     }
 
-    setResults({
+    const calculationResult = {
       distance,
       fuelAmount,
       cost,
@@ -233,8 +192,39 @@ export default function Home() {
       currencySymbol,
       consumption,
       price,
-      isReturn
+      isReturn,
+      vehicleType,
+      carModel,
+      locationFrom,
+      locationTo,
+      locationVia,
+      distanceUnit,
+      currency
+    };
+
+    setResults(calculationResult);
+
+    // Save to history
+    saveCalculation({
+      vehicleType,
+      carModel: carModel || 'Custom',
+      locationFrom: locationFrom || 'Start',
+      locationTo: locationTo || 'Destination',
+      locationVia,
+      distance,
+      distanceUnit,
+      fuelAmount,
+      cost,
+      currency,
+      currencySymbol,
+      consumption,
+      co2,
+      rating,
+      verdictText
     });
+
+    // Refresh history
+    setHistory(getHistory());
   };
 
   const getTip = (vType: string, consumption: number, co2: number) => {
@@ -247,6 +237,24 @@ export default function Home() {
     } else {
       return 'Your vehicle has good fuel efficiency. Regular maintenance will help keep it that way.';
     }
+  };
+
+  const loadHistoryItem = (item: CalculationHistory) => {
+    setVehicleType(item.vehicleType);
+    setCarModel(item.carModel === 'Custom' ? '' : item.carModel);
+    setLocationFrom(item.locationFrom === 'Start' ? '' : item.locationFrom);
+    setLocationTo(item.locationTo === 'Destination' ? '' : item.locationTo);
+    setLocationVia(item.locationVia || '');
+    setFuelConsumption(item.consumption.toString());
+    setCurrency(item.currency);
+    setDistanceUnit(item.distanceUnit);
+    setShowHistory(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteHistory = (id: string) => {
+    deleteCalculation(id);
+    setHistory(getHistory());
   };
 
   return (
@@ -262,7 +270,68 @@ export default function Home() {
         </div>
         <p className="fr-tagline">Smart Journey Fuel Calculator</p>
         <p className="fr-description">Calculate fuel costs, plan your trips, and track consumption for any vehicle - from basic cars to electric vehicles.</p>
+        
+        {history.length > 0 && (
+          <button 
+            className="fr-history-toggle"
+            onClick={() => setShowHistory(!showHistory)}
+          >
+            📊 {showHistory ? 'Hide' : 'Show'} History ({history.length})
+          </button>
+        )}
       </header>
+
+      {showHistory && history.length > 0 && (
+        <section className="fr-history-section">
+          <h2>Recent Calculations</h2>
+          <div className="fr-history-grid">
+            {history.map((item) => (
+              <div key={item.id} className="fr-history-card">
+                <div className="fr-history-header">
+                  <span className="fr-history-date">{formatDate(item.timestamp)}</span>
+                  <button 
+                    className="fr-history-delete"
+                    onClick={() => handleDeleteHistory(item.id)}
+                    title="Delete"
+                  >
+                    ×
+                  </button>
+                </div>
+                <div className="fr-history-route">
+                  📍 {item.locationFrom} → {item.locationTo}
+                </div>
+                <div className="fr-history-details">
+                  <div>📏 {item.distance.toFixed(1)} {item.distanceUnit}</div>
+                  <div>💰 {item.currencySymbol}{item.cost.toFixed(2)}</div>
+                </div>
+                <div className="fr-history-vehicle">
+                  🚗 {item.carModel} ({item.vehicleType})
+                </div>
+                <div className="fr-history-actions">
+                  <button 
+                    className="fr-btn-small"
+                    onClick={() => loadHistoryItem(item)}
+                  >
+                    Load
+                  </button>
+                  <button 
+                    className="fr-btn-small"
+                    onClick={() => shareToWhatsApp(item)}
+                  >
+                    WhatsApp
+                  </button>
+                  <button 
+                    className="fr-btn-small"
+                    onClick={() => shareViaEmail(item)}
+                  >
+                    Email
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="fr-input-section">
         <div className="fr-card">
@@ -280,7 +349,7 @@ export default function Home() {
             </div>
 
             <div className="fr-form-group fr-full-width">
-              <label>Car Model (Optional)</label>
+              <label>Car Model (Optional) - Filtered by {vehicleType}</label>
               <input 
                 type="text" 
                 value={carModel}
@@ -310,7 +379,7 @@ export default function Home() {
               </label>
               <div className="fr-input-with-help">
                 <input type="number" value={fuelConsumption} onChange={(e) => setFuelConsumption(e.target.value)} step="0.1" min="1" max="50" />
-                <button
+                <button 
                   type="button"
                   className="fr-help-btn"
                   onClick={() => {
@@ -354,8 +423,8 @@ export default function Home() {
               {fromSuggestions.length > 0 && (
                 <div className="fr-suggestions fr-active">
                   {fromSuggestions.map((city, i) => (
-                    <div key={i} className="fr-suggestion-item" onClick={() => { setLocationFrom(city); setFromSuggestions([]); }}>
-                      {city}
+                    <div key={i} className="fr-suggestion-item" onClick={() => { setLocationFrom(city.display); setFromSuggestions([]); }}>
+                      {city.display}
                     </div>
                   ))}
                 </div>
@@ -373,8 +442,8 @@ export default function Home() {
               {toSuggestions.length > 0 && (
                 <div className="fr-suggestions fr-active">
                   {toSuggestions.map((city, i) => (
-                    <div key={i} className="fr-suggestion-item" onClick={() => { setLocationTo(city); setToSuggestions([]); }}>
-                      {city}
+                    <div key={i} className="fr-suggestion-item" onClick={() => { setLocationTo(city.display); setToSuggestions([]); }}>
+                      {city.display}
                     </div>
                   ))}
                 </div>
@@ -392,8 +461,8 @@ export default function Home() {
               {viaSuggestions.length > 0 && (
                 <div className="fr-suggestions fr-active">
                   {viaSuggestions.map((city, i) => (
-                    <div key={i} className="fr-suggestion-item" onClick={() => { setLocationVia(city); setViaSuggestions([]); }}>
-                      {city}
+                    <div key={i} className="fr-suggestion-item" onClick={() => { setLocationVia(city.display); setViaSuggestions([]); }}>
+                      {city.display}
                     </div>
                   ))}
                 </div>
@@ -406,7 +475,10 @@ export default function Home() {
             </div>
 
             <div className="fr-form-group">
-              <label>Fuel Price per {priceUnit}</label>
+              <label>
+                Fuel Price per {priceUnit}
+                <span className="fr-help-text"> - Auto-set by region</span>
+              </label>
               <input type="number" value={fuelPrice} onChange={(e) => setFuelPrice(e.target.value)} step="0.01" min="0" />
             </div>
 
@@ -433,7 +505,7 @@ export default function Home() {
       </section>
 
       {results && (
-        <section className="fr-results-section">
+        <section className="fr-results-section" id="results-export">
           <h2>Journey Analysis</h2>
           
           <div className="fr-results-grid">
@@ -490,6 +562,27 @@ export default function Home() {
                 <strong>💡 Tip:</strong> {getTip(vehicleType, results.consumption, results.co2)}
               </p>
             </div>
+          </div>
+
+          <div className="fr-export-actions">
+            <button 
+              className="fr-btn-secondary"
+              onClick={() => downloadImage('results-export', `fuelroute-${Date.now()}`)}
+            >
+              📥 Download as Image
+            </button>
+            <button 
+              className="fr-btn-secondary"
+              onClick={() => shareToWhatsApp(history[0])}
+            >
+              💬 Share on WhatsApp
+            </button>
+            <button 
+              className="fr-btn-secondary"
+              onClick={() => shareViaEmail(history[0])}
+            >
+              📧 Share via Email
+            </button>
           </div>
         </section>
       )}

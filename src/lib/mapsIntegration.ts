@@ -110,22 +110,54 @@ export async function calculateDistanceWithOSM(
       const lat2 = parseFloat(destData[0].lat);
       const lon2 = parseFloat(destData[0].lon);
 
-      // Use OSRM for actual road distance (more accurate than straight-line)
-      const osrmResponse = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=false`
-      );
-      const osrmData = await osrmResponse.json();
+      // Try multiple routing options for accuracy
+      let distance: number;
+      let duration: number;
 
-      if (osrmData.code === 'OK' && osrmData.routes.length > 0) {
-        const route = osrmData.routes[0];
-        const distance = route.distance / 1000; // Convert meters to km
-        const duration = route.duration / 60; // Convert seconds to minutes
-        return { distance, duration, found: true, fromLat: lat1, fromLon: lon1, toLat: lat2, toLon: lon2 };
+      // Option 1: Use OpenRouteService (more accurate for global routes)
+      try {
+        const orsResponse = await fetch(
+          `https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf62481d4867d73e748e09ab8d1c7a870e238&start=${lon1},${lat1}&end=${lon2},${lat2}`
+        );
+        const orsData = await orsResponse.json();
+        
+        if (orsData.features && orsData.features.length > 0) {
+          distance = orsData.features[0].properties.segments[0].distance / 1000;
+          duration = orsData.features[0].properties.segments[0].duration / 60;
+        } else {
+          // Option 2: Fallback to OSRM
+          const osrmResponse = await fetch(
+            `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=false`
+          );
+          const osrmData = await osrmResponse.json();
+
+          if (osrmData.code === 'OK' && osrmData.routes.length > 0) {
+            distance = osrmData.routes[0].distance / 1000;
+            duration = osrmData.routes[0].duration / 60;
+          } else {
+            // Option 3: Fallback to Haversine formula with adjustment factor
+            distance = calculateHaversineDistance(lat1, lon1, lat2, lon2) * 1.2; // Add 20% for road distance
+            duration = (distance / 80) * 60;
+          }
+        }
+      } catch (orsError) {
+        console.error('OpenRouteService error:', orsError);
+        // Fallback to OSRM
+        const osrmResponse = await fetch(
+          `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=false`
+        );
+        const osrmData = await osrmResponse.json();
+
+        if (osrmData.code === 'OK' && osrmData.routes.length > 0) {
+          distance = osrmData.routes[0].distance / 1000;
+          duration = osrmData.routes[0].duration / 60;
+        } else {
+          // Fallback to Haversine formula with adjustment factor
+          distance = calculateHaversineDistance(lat1, lon1, lat2, lon2) * 1.2;
+          duration = (distance / 80) * 60;
+        }
       }
 
-      // Fallback to Haversine if OSRM fails
-      const distance = calculateHaversineDistance(lat1, lon1, lat2, lon2);
-      const duration = (distance / 80) * 60; // Assume 80 km/h average speed
       return { distance, duration, found: true, fromLat: lat1, fromLon: lon1, toLat: lat2, toLon: lon2 };
     }
   } catch (error) {

@@ -501,6 +501,81 @@
   padding: 20px;
 }
 
+.fr-route-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 20px;
+}
+
+.fr-route-point {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+  min-width: 200px;
+}
+
+.fr-route-start {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.fr-route-icon {
+  font-size: 2rem;
+  color: #000;
+  font-weight: bold;
+}
+
+.fr-route-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0a66c2;
+  background: #e3f2fd;
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.fr-route-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.fr-route-arrow {
+  font-size: 2rem;
+  color: #0a66c2;
+  font-weight: bold;
+}
+
+.fr-route-distance {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  background: #e3f2fd;
+  padding: 6px 16px;
+  border-radius: 20px;
+}
+
+.fr-map-note {
+  margin-top: 16px;
+  padding: 12px;
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  border-radius: 4px;
+}
+
+.fr-map-note small {
+  color: #856404;
+  font-size: 0.85rem;
+}
+
 .fr-map-placeholder p {
   font-size: 1.1rem;
   font-weight: 600;

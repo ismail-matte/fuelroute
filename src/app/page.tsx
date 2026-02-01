@@ -765,18 +765,25 @@ export default function Home() {
             <div className="fr-card fr-map-card">
               <h3>🗺️ Route Map</h3>
               <div className="fr-map-container">
-                {(window as any).routeCoordinates ? (
-                  <img
-                    className="fr-map-image"
-                    src={`https://static-maps.yandex.ru/1.x/?ll=${((window as any).routeCoordinates.fromLon + (window as any).routeCoordinates.toLon) / 2},${((window as any).routeCoordinates.fromLat + (window as any).routeCoordinates.toLat) / 2}&z=8&l=map&size=600,300&pt=${(window as any).routeCoordinates.fromLon},${(window as any).routeCoordinates.fromLat},pm2rdm~${(window as any).routeCoordinates.toLon},${(window as any).routeCoordinates.toLat},pm2blm`}
-                    alt="Route Map"
-                  />
-                ) : (
-                  <div className="fr-map-placeholder">
-                    <p>📍 Map not available</p>
-                    <small>Enter locations to see the route map</small>
+                <div className="fr-map-placeholder">
+                  <div className="fr-route-visual">
+                    <div className="fr-route-point fr-route-start">
+                      <span className="fr-route-icon">🟢</span>
+                      <span className="fr-route-label">{locationFrom || 'Start'}</span>
+                    </div>
+                    <div className="fr-route-line">
+                      <div className="fr-route-arrow">→</div>
+                      <div className="fr-route-distance">{results.distance.toFixed(1)} {distanceUnit}</div>
+                    </div>
+                    <div className="fr-route-point fr-route-end">
+                      <span className="fr-route-icon">🔴</span>
+                      <span className="fr-route-label">{locationTo || 'Destination'}</span>
+                    </div>
                   </div>
-                )}
+                  <div className="fr-map-note">
+                    <small>📍 Click "Open in Google Maps" for detailed route visualization</small>
+                  </div>
+                </div>
               </div>
               <div className="fr-map-actions">
                 <a

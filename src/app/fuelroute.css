@@ -481,6 +481,37 @@
   border: none;
 }
 
+.fr-map-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fr-map-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  color: #666;
+  text-align: center;
+  padding: 20px;
+}
+
+.fr-map-placeholder p {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.fr-map-placeholder small {
+  font-size: 0.9rem;
+  color: #888;
+}
+
 .fr-map-actions {
   margin-top: 16px;
   text-align: center;

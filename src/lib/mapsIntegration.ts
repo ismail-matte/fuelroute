@@ -4,6 +4,10 @@ export interface DistanceResult {
   distance: number; // in km
   duration: number; // in minutes
   found: boolean;
+  fromLat?: number;
+  fromLon?: number;
+  toLat?: number;
+  toLon?: number;
 }
 
 // Note: In production, you'll need a Google Maps API key
@@ -106,11 +110,23 @@ export async function calculateDistanceWithOSM(
       const lat2 = parseFloat(destData[0].lat);
       const lon2 = parseFloat(destData[0].lon);
 
-      // Calculate distance using Haversine formula
+      // Use OSRM for actual road distance (more accurate than straight-line)
+      const osrmResponse = await fetch(
+        `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=false`
+      );
+      const osrmData = await osrmResponse.json();
+
+      if (osrmData.code === 'OK' && osrmData.routes.length > 0) {
+        const route = osrmData.routes[0];
+        const distance = route.distance / 1000; // Convert meters to km
+        const duration = route.duration / 60; // Convert seconds to minutes
+        return { distance, duration, found: true, fromLat: lat1, fromLon: lon1, toLat: lat2, toLon: lon2 };
+      }
+
+      // Fallback to Haversine if OSRM fails
       const distance = calculateHaversineDistance(lat1, lon1, lat2, lon2);
       const duration = (distance / 80) * 60; // Assume 80 km/h average speed
-
-      return { distance, duration, found: true };
+      return { distance, duration, found: true, fromLat: lat1, fromLon: lon1, toLat: lat2, toLon: lon2 };
     }
   } catch (error) {
     console.error('OSM API error:', error);

@@ -205,6 +205,13 @@ export default function Home() {
       
       if (distanceResult.found) {
         distance = distanceResult.distance;
+        // Store coordinates for map display
+        (window as any).routeCoordinates = {
+          fromLat: distanceResult.fromLat,
+          fromLon: distanceResult.fromLon,
+          toLat: distanceResult.toLat,
+          toLon: distanceResult.toLon
+        };
       } else {
         // Fallback to mock calculation
         distance = calculateDistance(locationFrom, locationTo, locationVia);
@@ -758,14 +765,18 @@ export default function Home() {
             <div className="fr-card fr-map-card">
               <h3>🗺️ Route Map</h3>
               <div className="fr-map-container">
-                <iframe
-                  className="fr-map-iframe"
-                  src={`https://www.google.com/maps/embed/v1/directions?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&origin=${encodeURIComponent(locationFrom || '')}&destination=${encodeURIComponent(locationTo || '')}${locationVia ? `&waypoints=${encodeURIComponent(locationVia)}` : ''}&mode=driving`}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Route Map"
-                />
+                {(window as any).routeCoordinates ? (
+                  <img
+                    className="fr-map-image"
+                    src={`https://static-maps.yandex.ru/1.x/?ll=${((window as any).routeCoordinates.fromLon + (window as any).routeCoordinates.toLon) / 2},${((window as any).routeCoordinates.fromLat + (window as any).routeCoordinates.toLat) / 2}&z=8&l=map&size=600,300&pt=${(window as any).routeCoordinates.fromLon},${(window as any).routeCoordinates.fromLat},pm2rdm~${(window as any).routeCoordinates.toLon},${(window as any).routeCoordinates.toLat},pm2blm`}
+                    alt="Route Map"
+                  />
+                ) : (
+                  <div className="fr-map-placeholder">
+                    <p>📍 Map not available</p>
+                    <small>Enter locations to see the route map</small>
+                  </div>
+                )}
               </div>
               <div className="fr-map-actions">
                 <a

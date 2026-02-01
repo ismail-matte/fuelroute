@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "FuelRoute - Smart Journey Fuel Calculator",
   description: "Calculate fuel costs, plan trips, and track consumption for any vehicle. 200+ car models, 60+ countries, 500+ cities. 100% free!",
+  other: {
+    "google-adsense-account": "ca-pub-6138120610230152",
+  },
 };
 
 export default function RootLayout({

@@ -870,7 +870,7 @@ export default function Home() {
                 </a>
                 <small>Email: imatte@engineer.com</small>
               </div>
-              
+
               <div className="fr-donation-card">
                 <h3>📱 Mobile Money</h3>
                 <p>Send via Mobile Money (Uganda)</p>
@@ -878,6 +878,30 @@ export default function Home() {
                   <strong>+256 782 475 028</strong>
                 </div>
                 <small>MTN/Airtel Money accepted</small>
+              </div>
+
+              <div className="fr-donation-card">
+                <h3>💸 Remitly</h3>
+                <p>Send via Remitly (International to Uganda)</p>
+                <div className="fr-phone-number">
+                  <strong>+256 782 475 028</strong>
+                </div>
+                <small>MTN Mobile Money • Bank Deposit • Cash Pickup</small>
+                <div className="fr-remitly-info">
+                  <p><strong>Delivery Methods:</strong></p>
+                  <ul>
+                    <li>📱 Mobile Money (MTN/Airtel)</li>
+                    <li>🏦 Bank Deposit (Centenary, Equity, ABSA, etc.)</li>
+                    <li>💵 Cash Pickup at partner locations</li>
+                  </ul>
+                  <p><strong>For Cash Pickup:</strong></p>
+                  <ul>
+                    <li>✅ Transfer Reference Number (from sender)</li>
+                    <li>✅ Valid ID (National ID, Passport, Refugee ID)</li>
+                    <li>✅ Name must match ID exactly</li>
+                  </ul>
+                  <p><em>Recipients pay no charges to receive money</em></p>
+                </div>
               </div>
             </div>
             

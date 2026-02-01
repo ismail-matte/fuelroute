@@ -652,6 +652,40 @@
   border-radius: 8px;
 }
 
+.fr-remitly-info {
+  margin-top: 16px;
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.fr-remitly-info p {
+  margin: 8px 0;
+  color: #1a1a1a;
+}
+
+.fr-remitly-info p strong {
+  color: #0a66c2;
+}
+
+.fr-remitly-info ul {
+  margin: 8px 0;
+  padding-left: 20px;
+  color: #4a4a4a;
+}
+
+.fr-remitly-info li {
+  margin: 4px 0;
+  line-height: 1.4;
+}
+
+.fr-remitly-info em {
+  color: #10b981;
+  font-weight: 500;
+}
+
 .fr-stats {
   background: #f0f9ff;
   border-left: 4px solid #0a66c2;

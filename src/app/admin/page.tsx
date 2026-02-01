@@ -11,6 +11,7 @@ export default function AdminPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [activeTab, setActiveTab] = useState<'dashboard' | 'social' | 'settings'>('dashboard');
   const [config, setConfig] = useState<AdminConfig | null>(null);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
@@ -25,14 +26,22 @@ export default function AdminPage() {
     }
   }, []);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    setIsLoggingIn(true);
+    setLoginError('');
+    
+    // Simulate async login (add small delay for UX)
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
     if (login(username, password)) {
       setLoggedIn(true);
       setConfig(getAdminConfig());
       setLoginError('');
     } else {
-      setLoginError('Invalid username or password');
+      setLoginError('Invalid username or password. Please try again.');
     }
+    
+    setIsLoggingIn(false);
   };
 
   const handleLogout = () => {
@@ -85,6 +94,12 @@ export default function AdminPage() {
           </div>
           <h1>FuelRoute Admin</h1>
           <p>Control Panel</p>
+          
+          <div className="admin-credentials-hint">
+            <p><strong>Default Login:</strong></p>
+            <p>Username: <code>Admin</code></p>
+            <p>Password: <code>1pp5@dm1n</code></p>
+          </div>
 
           {!showPasswordReset ? (
             <>
@@ -101,12 +116,24 @@ export default function AdminPage() {
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                  onKeyPress={(e) => e.key === 'Enter' && !isLoggingIn && handleLogin()}
                   className="admin-input"
+                  disabled={isLoggingIn}
                 />
                 {loginError && <p className="admin-error">{loginError}</p>}
-                <button onClick={handleLogin} className="admin-btn-primary">
-                  Login
+                <button
+                  onClick={handleLogin}
+                  className="admin-btn-primary"
+                  disabled={isLoggingIn}
+                >
+                  {isLoggingIn ? (
+                    <>
+                      <span className="admin-spinner"></span>
+                      Logging in...
+                    </>
+                  ) : (
+                    'Login'
+                  )}
                 </button>
                 <button 
                   onClick={() => setShowPasswordReset(true)} 

@@ -8,6 +8,7 @@ import { searchCities, type City } from '../lib/locationService';
 import { saveCalculation, getHistory, deleteCalculation, formatDate, type CalculationHistory } from '../lib/historyManager';
 import { downloadImage, shareToWhatsApp, shareViaEmail } from '../lib/exportUtils';
 import { trackVisit, trackCalculation, getFormattedStats } from '../lib/analytics';
+import ChatWidget from '../components/ChatWidget';
 
 const currencySymbols: Record<string, string> = {
   'USD': '$', 'EUR': '€', 'GBP': '£', 'ZAR': 'R', 'AUD': 'A$',
@@ -723,6 +724,9 @@ export default function Home() {
           <p className="fr-footer-note">All calculations are estimates. Actual fuel consumption may vary based on driving conditions, vehicle condition, and driving style.</p>
         </div>
       </footer>
+
+      {/* Chat Widget */}
+      <ChatWidget />
     </div>
   );
 }

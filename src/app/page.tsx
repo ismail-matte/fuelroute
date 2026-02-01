@@ -6,8 +6,9 @@ import { searchCars, type CarModel } from '../lib/carDatabase';
 import { detectUserLocation, type RegionalSettings } from '../lib/geolocation';
 import { searchCities, type City } from '../lib/locationService';
 import { saveCalculation, getHistory, deleteCalculation, formatDate, type CalculationHistory } from '../lib/historyManager';
-import { downloadImage, shareToWhatsApp, shareViaEmail } from '../lib/exportUtils';
+import { downloadImage, shareToWhatsApp, shareViaEmail, sendCalculationToEmail } from '../lib/exportUtils';
 import { trackVisit, trackCalculation, getFormattedStats } from '../lib/analytics';
+import { calculateDistanceWithOSM, openGoogleMapsForDistance, validateLocation } from '../lib/mapsIntegration';
 import ChatWidget from '../components/ChatWidget';
 
 const currencySymbols: Record<string, string> = {
@@ -40,6 +41,9 @@ export default function Home() {
   const [showHistory, setShowHistory] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
   const [showContact, setShowContact] = useState(false);
+  const [showEmailPopup, setShowEmailPopup] = useState(false);
+  const [recipientEmail, setRecipientEmail] = useState('');
+  const [isCalculatingDistance, setIsCalculatingDistance] = useState(false);
 
   const consumptionUnit = vehicleType === 'electric' 
     ? (distanceUnit === 'km' ? 'kWh/100km' : 'kWh/100mi')
@@ -124,7 +128,7 @@ export default function Home() {
     return Math.round(baseDistance + viaDistance + randomFactor);
   };
 
-  const calculateJourney = () => {
+  const calculateJourney = async () => {
     // Track calculation
     trackCalculation();
     
@@ -137,7 +141,22 @@ export default function Home() {
     if (manualDistance && parseFloat(manualDistance) > 0) {
       distance = parseFloat(manualDistance);
     } else if (locationFrom && locationTo) {
-      distance = calculateDistance(locationFrom, locationTo, locationVia);
+      // Try to get real distance from OpenStreetMap
+      setIsCalculatingDistance(true);
+      const distanceResult = await calculateDistanceWithOSM(locationFrom, locationTo);
+      setIsCalculatingDistance(false);
+      
+      if (distanceResult.found) {
+        distance = distanceResult.distance;
+      } else {
+        // Fallback to mock calculation
+        distance = calculateDistance(locationFrom, locationTo, locationVia);
+        // Show helper message
+        if (confirm('Could not find exact distance. Would you like to check Google Maps for accurate distance?')) {
+          openGoogleMapsForDistance(locationFrom, locationTo, locationVia);
+          return;
+        }
+      }
     } else {
       alert('Please enter locations or manual distance');
       return;
@@ -482,6 +501,15 @@ export default function Home() {
             <div className="fr-form-group">
               <label>Or Enter Distance Manually</label>
               <input type="number" value={manualDistance} onChange={(e) => setManualDistance(e.target.value)} placeholder="Distance" step="1" min="0" />
+              {locationFrom && locationTo && (
+                <button
+                  type="button"
+                  className="fr-maps-helper"
+                  onClick={() => openGoogleMapsForDistance(locationFrom, locationTo, locationVia)}
+                >
+                  🗺️ Find distance on Google Maps
+                </button>
+              )}
             </div>
 
             <div className="fr-form-group">
@@ -575,26 +603,80 @@ export default function Home() {
           </div>
 
           <div className="fr-export-actions">
-            <button 
+            <button
               className="fr-btn-secondary"
               onClick={() => downloadImage('results-export', `fuelroute-${Date.now()}`)}
             >
               📥 Download as Image
             </button>
-            <button 
+            <button
               className="fr-btn-secondary"
               onClick={() => shareToWhatsApp(history[0])}
             >
               💬 Share on WhatsApp
             </button>
-            <button 
+            <button
               className="fr-btn-secondary"
-              onClick={() => shareViaEmail(history[0])}
+              onClick={() => setShowEmailPopup(true)}
             >
-              📧 Share via Email
+              📧 Email to Someone
+            </button>
+            <button
+              className="fr-btn-secondary"
+              onClick={() => openGoogleMapsForDistance(locationFrom, locationTo, locationVia)}
+            >
+              🗺️ View on Google Maps
             </button>
           </div>
         </section>
+      )}
+
+      {/* Email Share Modal */}
+      {showEmailPopup && results && (
+        <div className="fr-modal-overlay" onClick={() => setShowEmailPopup(false)}>
+          <div className="fr-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="fr-modal-close" onClick={() => setShowEmailPopup(false)}>×</button>
+            <h2>📧 Email Calculation</h2>
+            <p className="fr-modal-intro">
+              Send this journey calculation to an email address:
+            </p>
+            
+            <div className="fr-email-form">
+              <input
+                type="email"
+                value={recipientEmail}
+                onChange={(e) => setRecipientEmail(e.target.value)}
+                placeholder="recipient@email.com"
+                className="fr-email-input"
+              />
+              <button
+                onClick={async () => {
+                  if (!recipientEmail.trim()) {
+                    alert('Please enter an email address');
+                    return;
+                  }
+                  await sendCalculationToEmail({ email: recipientEmail, calculation: history[0] });
+                  setShowEmailPopup(false);
+                  setRecipientEmail('');
+                  alert('Email client opened! Send the email to complete.');
+                }}
+                className="fr-btn-primary"
+              >
+                Send Email
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Loading Overlay */}
+      {isCalculatingDistance && (
+        <div className="fr-modal-overlay">
+          <div className="fr-loading-card">
+            <div className="fr-spinner"></div>
+            <p>Calculating distance...</p>
+          </div>
+        </div>
       )}
 
       {/* Support Modal */}

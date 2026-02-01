@@ -2,6 +2,39 @@
 import html2canvas from 'html2canvas';
 import type { CalculationHistory } from './historyManager';
 
+export interface EmailShareData {
+  email: string;
+  calculation: CalculationHistory;
+}
+
+export async function sendCalculationToEmail(data: EmailShareData): Promise<boolean> {
+  const { email, calculation } = data;
+  
+  const subject = encodeURIComponent('Your FuelRoute Journey Calculation');
+  const body = encodeURIComponent(`Hello!
+
+Here's your FuelRoute journey calculation:
+
+📍 Route: ${calculation.locationFrom} → ${calculation.locationTo}
+📏 Distance: ${calculation.distance.toFixed(1)} ${calculation.distanceUnit}
+⛽ Fuel Needed: ${calculation.fuelAmount.toFixed(2)} ${calculation.vehicleType === 'electric' ? 'kWh' : 'L'}
+💰 Total Cost: ${calculation.currencySymbol}${calculation.cost.toFixed(2)}
+⭐ Efficiency: ${calculation.verdictText}
+🌍 CO₂ Emissions: ${calculation.co2.toFixed(2)} kg
+
+Vehicle: ${calculation.carModel} (${calculation.vehicleType})
+Consumption: ${calculation.consumption} ${calculation.vehicleType === 'electric' ? 'kWh/100km' : 'L/100km'}
+
+Plan your own journey at: ${window.location.origin}
+
+---
+Sent from FuelRoute - Smart Journey Fuel Calculator
+  `);
+
+  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  return true;
+}
+
 export async function exportToImage(elementId: string, filename: string = 'fuelroute-calculation'): Promise<Blob | null> {
   try {
     const element = document.getElementById(elementId);

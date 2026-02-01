@@ -786,3 +786,74 @@
   color: #a0a0a0;
   font-style: italic;
 }
+
+/* Email Form Styles */
+.fr-email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fr-email-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.fr-email-input:focus {
+  outline: none;
+  border-color: #0a66c2;
+  box-shadow: 0 0 0 3px rgba(10, 102, 194, 0.1);
+}
+
+/* Maps Helper Button */
+.fr-maps-helper {
+  margin-top: 8px;
+  padding: 8px 16px;
+  background: #f0f9ff;
+  color: #0a66c2;
+  border: 2px solid #0a66c2;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.fr-maps-helper:hover {
+  background: #0a66c2;
+  color: white;
+}
+
+/* Loading Overlay */
+.fr-loading-card {
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.fr-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #0a66c2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.fr-loading-card p {
+  font-size: 1.1rem;
+  color: #4a4a4a;
+  font-weight: 600;
+}

@@ -8,7 +8,8 @@ import { searchCities, type City } from '../lib/locationService';
 import { saveCalculation, getHistory, deleteCalculation, formatDate, type CalculationHistory } from '../lib/historyManager';
 import { downloadImage, shareToWhatsApp, shareViaEmail, sendCalculationToEmail } from '../lib/exportUtils';
 import { trackVisit, trackCalculation, getFormattedStats } from '../lib/analytics';
-import { calculateDistanceWithOSM, openGoogleMapsForDistance, validateLocation } from '../lib/mapsIntegration';
+import { calculateDistanceWithOSM, openGoogleMapsForDistance, validateLocation, generateGoogleMapsStaticUrl } from '../lib/mapsIntegration';
+import { GOOGLE_MAPS_API_KEY } from '../lib/mapsIntegration';
 import { convertFuelPrice, detectCurrencyFromLocation, getCurrencySymbol, exchangeRates } from '../lib/currencyConverter';
 import ChatWidget from '../components/ChatWidget';
 
@@ -765,25 +766,48 @@ export default function Home() {
             <div className="fr-card fr-map-card">
               <h3>🗺️ Route Map</h3>
               <div className="fr-map-container">
-                <div className="fr-map-placeholder">
-                  <div className="fr-route-visual">
-                    <div className="fr-route-point fr-route-start">
-                      <span className="fr-route-icon">🟢</span>
-                      <span className="fr-route-label">{locationFrom || 'Start'}</span>
+                {(window as any).routeCoordinates && GOOGLE_MAPS_API_KEY ? (
+                  <img
+                    className="fr-map-image"
+                    crossOrigin="anonymous"
+                    src={generateGoogleMapsStaticUrl(
+                      (window as any).routeCoordinates.fromLat,
+                      (window as any).routeCoordinates.fromLon,
+                      (window as any).routeCoordinates.toLat,
+                      (window as any).routeCoordinates.toLon,
+                      results.distance
+                    )}
+                    alt="Route Map"
+                    onError={(e) => {
+                      console.error('Failed to load map image');
+                      e.currentTarget.style.display = 'none';
+                      const placeholder = e.currentTarget.parentElement?.querySelector('.fr-map-placeholder');
+                      if (placeholder) {
+                        (placeholder as HTMLElement).style.display = 'flex';
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className="fr-map-placeholder">
+                    <div className="fr-route-visual">
+                      <div className="fr-route-point fr-route-start">
+                        <span className="fr-route-icon">🟢</span>
+                        <span className="fr-route-label">{locationFrom || 'Start'}</span>
+                      </div>
+                      <div className="fr-route-line">
+                        <div className="fr-route-arrow">→</div>
+                        <div className="fr-route-distance">{results.distance.toFixed(1)} {distanceUnit}</div>
+                      </div>
+                      <div className="fr-route-point fr-route-end">
+                        <span className="fr-route-icon">🔴</span>
+                        <span className="fr-route-label">{locationTo || 'Destination'}</span>
+                      </div>
                     </div>
-                    <div className="fr-route-line">
-                      <div className="fr-route-arrow">→</div>
-                      <div className="fr-route-distance">{results.distance.toFixed(1)} {distanceUnit}</div>
-                    </div>
-                    <div className="fr-route-point fr-route-end">
-                      <span className="fr-route-icon">🔴</span>
-                      <span className="fr-route-label">{locationTo || 'Destination'}</span>
+                    <div className="fr-map-note">
+                      <small>📍 Click "Open in Google Maps" for detailed route visualization</small>
                     </div>
                   </div>
-                  <div className="fr-map-note">
-                    <small>📍 Click "Open in Google Maps" for detailed route visualization</small>
-                  </div>
-                </div>
+                )}
               </div>
               <div className="fr-map-actions">
                 <a

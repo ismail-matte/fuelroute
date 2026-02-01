@@ -12,7 +12,7 @@ export interface DistanceResult {
 
 // Note: In production, you'll need a Google Maps API key
 // Get one free at: https://console.cloud.google.com/google/maps-apis
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
+export const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
 export async function calculateDistanceWithGoogleMaps(
   origin: string,
@@ -57,6 +57,37 @@ export function openGoogleMapsForDistance(origin: string, destination: string, w
   }
   
   window.open(url, '_blank');
+}
+
+export function generateGoogleMapsStaticUrl(
+  originLat: number,
+  originLon: number,
+  destLat: number,
+  destLon: number,
+  distance: number
+): string {
+  // Calculate appropriate zoom level based on distance
+  let zoom = 10;
+  if (distance < 50) {
+    zoom = 12;
+  } else if (distance < 100) {
+    zoom = 11;
+  } else if (distance < 200) {
+    zoom = 10;
+  } else if (distance < 400) {
+    zoom = 9;
+  } else if (distance < 800) {
+    zoom = 8;
+  } else {
+    zoom = 7;
+  }
+
+  // Calculate center point
+  const centerLat = (originLat + destLat) / 2;
+  const centerLon = (originLon + destLon) / 2;
+
+  // Generate static map URL with route
+  return `https://maps.googleapis.com/maps/api/staticmap?center=${centerLat},${centerLon}&zoom=${zoom}&size=600x300&maptype=roadmap&markers=color:green|label:S|${originLat},${originLon}&markers=color:red|label:D|${destLat},${destLon}&path=color:blue|weight:3|${originLat},${originLon}|${destLat},${destLon}&key=${GOOGLE_MAPS_API_KEY}`;
 }
 
 export function generateGoogleMapsEmbedUrl(origin: string, destination: string): string {

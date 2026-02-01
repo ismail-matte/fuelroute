@@ -45,7 +45,7 @@ export default function ChatWidget() {
     if (!inputValue.trim()) return;
 
     const userMessage: ChatMessage = {
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       role: 'user',
       content: inputValue,
       timestamp: Date.now(),

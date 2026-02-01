@@ -57,12 +57,16 @@ function isComplexQuery(query: string): boolean {
   return complexKeywords.some(keyword => lowerQuery.includes(keyword));
 }
 
+function generateUniqueId(): string {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+
 export async function getChatResponse(userMessage: string): Promise<ChatMessage> {
   // First, check FAQ
   const faqResponse = findBestMatch(userMessage);
   if (faqResponse) {
     return {
-      id: Date.now().toString(),
+      id: generateUniqueId(),
       role: 'assistant',
       content: faqResponse,
       timestamp: Date.now(),
@@ -72,7 +76,7 @@ export async function getChatResponse(userMessage: string): Promise<ChatMessage>
   // Check if it's a complex query
   if (isComplexQuery(userMessage)) {
     return {
-      id: Date.now().toString(),
+      id: generateUniqueId(),
       role: 'assistant',
       content: 'This seems like a complex inquiry that needs human attention. Please provide your email address, and our team will get back to you within 24 hours with a comprehensive response.',
       timestamp: Date.now(),
@@ -101,7 +105,7 @@ export async function getChatResponse(userMessage: string): Promise<ChatMessage>
       const aiResponse = data[0]?.generated_text || 'I\'m here to help! Could you rephrase your question?';
       
       return {
-        id: Date.now().toString(),
+        id: generateUniqueId(),
         role: 'assistant',
         content: aiResponse,
         timestamp: Date.now(),
@@ -113,7 +117,7 @@ export async function getChatResponse(userMessage: string): Promise<ChatMessage>
   
   // Fallback response
   return {
-    id: Date.now().toString(),
+    id: generateUniqueId(),
     role: 'assistant',
     content: 'I\'m here to help! For immediate answers, try asking about: how to use FuelRoute, costs, electric vehicles, sharing results, or contact information. For complex inquiries, please email info@tech-center.com.',
     timestamp: Date.now(),

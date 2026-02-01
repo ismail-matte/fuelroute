@@ -737,20 +737,46 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="fr-card fr-summary-card">
-            <h3>Journey Summary</h3>
-            <div className="fr-journey-summary">
-              <p><strong>Route:</strong> {locationFrom || 'Start'} → {locationVia ? locationVia + ' → ' : ''}{locationTo || 'Destination'}</p>
-              <p><strong>Journey Type:</strong> {results.isReturn ? 'Return Trip' : 'One Way'}</p>
-              <p><strong>Vehicle:</strong> {carModel || 'Custom'} ({vehicleType})</p>
-              <p><strong>Consumption Rate:</strong> {results.consumption} {vehicleType === 'electric' ? 'kWh/100km' : 'L/100km'}</p>
-              <p><strong>Fuel Price:</strong> {results.currencySymbol}{results.price.toFixed(2)} per {vehicleType === 'electric' ? 'kWh' : 'liter'}</p>
-              <p><strong>Total Distance:</strong> {results.distance.toFixed(1)} {distanceUnit}</p>
-              <p><strong>Estimated Cost:</strong> {results.currencySymbol}{results.cost.toFixed(2)}</p>
-              <p><strong>Environmental Impact:</strong> {results.co2.toFixed(2)} kg CO₂ emissions</p>
-              <p style={{ marginTop: '16px', padding: '12px', background: '#f0f9ff', borderLeft: '4px solid #0a66c2', borderRadius: '4px' }}>
-                <strong>💡 Tip:</strong> {getTip(vehicleType, results.consumption, results.co2)}
-              </p>
+          <div className="fr-summary-container">
+            <div className="fr-card fr-summary-card">
+              <h3>Journey Summary</h3>
+              <div className="fr-journey-summary">
+                <p><strong>Route:</strong> {locationFrom || 'Start'} → {locationVia ? locationVia + ' → ' : ''}{locationTo || 'Destination'}</p>
+                <p><strong>Journey Type:</strong> {results.isReturn ? 'Return Trip' : 'One Way'}</p>
+                <p><strong>Vehicle:</strong> {carModel || 'Custom'} ({vehicleType})</p>
+                <p><strong>Consumption Rate:</strong> {results.consumption} {vehicleType === 'electric' ? 'kWh/100km' : 'L/100km'}</p>
+                <p><strong>Fuel Price:</strong> {results.currencySymbol}{results.price.toFixed(2)} per {vehicleType === 'electric' ? 'kWh' : 'liter'}</p>
+                <p><strong>Total Distance:</strong> {results.distance.toFixed(1)} {distanceUnit}</p>
+                <p><strong>Estimated Cost:</strong> {results.currencySymbol}{results.cost.toFixed(2)}</p>
+                <p><strong>Environmental Impact:</strong> {results.co2.toFixed(2)} kg CO₂ emissions</p>
+                <p style={{ marginTop: '16px', padding: '12px', background: '#f0f9ff', borderLeft: '4px solid #0a66c2', borderRadius: '4px' }}>
+                  <strong>💡 Tip:</strong> {getTip(vehicleType, results.consumption, results.co2)}
+                </p>
+              </div>
+            </div>
+
+            <div className="fr-card fr-map-card">
+              <h3>🗺️ Route Map</h3>
+              <div className="fr-map-container">
+                <iframe
+                  className="fr-map-iframe"
+                  src={`https://www.google.com/maps/embed/v1/directions?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&origin=${encodeURIComponent(locationFrom || '')}&destination=${encodeURIComponent(locationTo || '')}${locationVia ? `&waypoints=${encodeURIComponent(locationVia)}` : ''}&mode=driving`}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Route Map"
+                />
+              </div>
+              <div className="fr-map-actions">
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(locationFrom || '')}&destination=${encodeURIComponent(locationTo || '')}${locationVia ? `&waypoints=${encodeURIComponent(locationVia)}` : ''}&travelmode=driving`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fr-btn-map-link"
+                >
+                  🗺️ Open in Google Maps
+                </a>
+              </div>
             </div>
           </div>
 

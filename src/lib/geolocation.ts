@@ -31,7 +31,6 @@ export const regionMapping: Record<string, RegionalSettings> = {
   'ZA': { currency: 'ZAR', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 22.00 },
   'NG': { currency: 'NGN', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 650.00 },
   'KE': { currency: 'KES', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 180.00 },
-  'EG': { currency: 'USD', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 0.35 },
   'MA': { currency: 'MAD', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 12.00 },
   'TN': { currency: 'TND', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 2.40 },
   'GH': { currency: 'GHS', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 14.50 },

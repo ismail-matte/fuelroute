@@ -857,3 +857,57 @@
   color: #4a4a4a;
   font-weight: 600;
 }
+
+/* Expanded Card Styles */
+.fr-result-card {
+  cursor: pointer;
+  position: relative;
+}
+
+.fr-result-card.fr-expanded {
+  grid-column: span 2;
+  transform: scale(1.02);
+  z-index: 10;
+}
+
+.fr-card-details {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 2px solid #e0e0e0;
+  text-align: left;
+  animation: expandDetails 0.3s ease;
+}
+
+.fr-result-card.fr-highlight .fr-card-details {
+  border-top-color: rgba(255, 255, 255, 0.3);
+}
+
+.fr-card-details p {
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+.fr-card-details strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+@keyframes expandDetails {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}
+
+/* Mobile adjustments for expanded cards */
+@media (max-width: 768px) {
+  .fr-result-card.fr-expanded {
+    grid-column: span 1;
+  }
+}

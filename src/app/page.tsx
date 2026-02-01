@@ -13,7 +13,7 @@ import ChatWidget from '../components/ChatWidget';
 
 const currencySymbols: Record<string, string> = {
   'USD': '$', 'EUR': '€', 'GBP': '£', 'ZAR': 'R', 'AUD': 'A$',
-  'CAD': 'C$', 'JPY': '¥', 'CNY': '¥', 'INR': '₹', 'NGN': '₦', 'KES': 'KSh'
+  'CAD': 'C$', 'JPY': '¥', 'CNY': '¥', 'INR': '₹', 'NGN': '₦', 'KES': 'KSh', 'UGX': 'USh'
 };
 
 export default function Home() {
@@ -46,6 +46,7 @@ export default function Home() {
   const [isCalculatingDistance, setIsCalculatingDistance] = useState(false);
   const [stats, setStats] = useState<string>('');
   const [mounted, setMounted] = useState(false);
+  const [expandedCard, setExpandedCard] = useState<string | null>(null);
 
   const consumptionUnit = vehicleType === 'electric' 
     ? (distanceUnit === 'km' ? 'kWh/100km' : 'kWh/100mi')
@@ -223,6 +224,12 @@ export default function Home() {
       }
     }
 
+    // Calculate estimated journey time (assuming average speed)
+    const avgSpeed = vehicleType === 'electric' ? 70 : 80; // km/h
+    const durationHours = distance / avgSpeed;
+    const hours = Math.floor(durationHours);
+    const minutes = Math.round((durationHours - hours) * 60);
+
     const calculationResult = {
       distance,
       fuelAmount,
@@ -241,7 +248,8 @@ export default function Home() {
       locationTo,
       locationVia,
       distanceUnit,
-      currency
+      currency,
+      duration: { hours, minutes, total: durationHours }
     };
 
     setResults(calculationResult);
@@ -547,6 +555,7 @@ export default function Home() {
                 <option value="INR">INR - Indian Rupee (₹)</option>
                 <option value="NGN">NGN - Nigerian Naira (₦)</option>
                 <option value="KES">KES - Kenyan Shilling (KSh)</option>
+                <option value="UGX">UGX - Ugandan Shilling (USh)</option>
               </select>
             </div>
           </div>
@@ -560,41 +569,113 @@ export default function Home() {
           <h2>Journey Analysis</h2>
           
           <div className="fr-results-grid">
-            <div className="fr-result-card">
+            <div
+              className={`fr-result-card ${expandedCard === 'distance' ? 'fr-expanded' : ''}`}
+              onClick={() => setExpandedCard(expandedCard === 'distance' ? null : 'distance')}
+            >
               <div className="fr-result-icon">📏</div>
               <div className="fr-result-label">Total Distance</div>
               <div className="fr-result-value">{results.distance.toFixed(1)} {distanceUnit}</div>
+              {expandedCard === 'distance' && (
+                <div className="fr-card-details">
+                  <p><strong>Route Analysis:</strong></p>
+                  <p>• One-way distance: {(results.distance / (results.isReturn ? 2 : 1)).toFixed(1)} {distanceUnit}</p>
+                  <p>• Journey type: {results.isReturn ? 'Return trip (×2)' : 'One-way'}</p>
+                  <p>• Calculated using: {locationFrom && locationTo ? 'Real GPS coordinates' : 'Manual entry'}</p>
+                </div>
+              )}
             </div>
 
-            <div className="fr-result-card">
+            <div
+              className={`fr-result-card ${expandedCard === 'time' ? 'fr-expanded' : ''}`}
+              onClick={() => setExpandedCard(expandedCard === 'time' ? null : 'time')}
+            >
+              <div className="fr-result-icon">⏱️</div>
+              <div className="fr-result-label">Estimated Time</div>
+              <div className="fr-result-value">
+                {results.duration.hours}h {results.duration.minutes}m
+              </div>
+              {expandedCard === 'time' && (
+                <div className="fr-card-details">
+                  <p><strong>Time Breakdown:</strong></p>
+                  <p>• Driving time: {results.duration.hours}h {results.duration.minutes}m</p>
+                  <p>• Average speed: {vehicleType === 'electric' ? '70' : '80'} km/h</p>
+                  <p>• Recommended breaks: {Math.floor(results.duration.total / 2)} stops</p>
+                  <p>💡 Add 15-20% for traffic and breaks</p>
+                </div>
+              )}
+            </div>
+
+            <div
+              className={`fr-result-card ${expandedCard === 'fuel' ? 'fr-expanded' : ''}`}
+              onClick={() => setExpandedCard(expandedCard === 'fuel' ? null : 'fuel')}
+            >
               <div className="fr-result-icon">⛽</div>
               <div className="fr-result-label">Fuel Needed</div>
               <div className="fr-result-value">{results.fuelAmount.toFixed(2)} {vehicleType === 'electric' ? 'kWh' : 'L'}</div>
+              {expandedCard === 'fuel' && (
+                <div className="fr-card-details">
+                  <p><strong>Fuel Analysis:</strong></p>
+                  <p>• Consumption rate: {results.consumption} {vehicleType === 'electric' ? 'kWh/100km' : 'L/100km'}</p>
+                  <p>• Tank capacity needed: {(results.fuelAmount / 50 * 100).toFixed(0)}% of typical tank</p>
+                  <p>• Refuel stops: {Math.ceil(results.fuelAmount / 50)}</p>
+                  <p>💡 Fill up before departure for best prices</p>
+                </div>
+              )}
             </div>
 
-            <div className="fr-result-card">
+            <div
+              className={`fr-result-card ${expandedCard === 'cost' ? 'fr-expanded' : ''}`}
+              onClick={() => setExpandedCard(expandedCard === 'cost' ? null : 'cost')}
+            >
               <div className="fr-result-icon">💰</div>
               <div className="fr-result-label">Total Cost</div>
               <div className="fr-result-value">{results.currencySymbol}{results.cost.toFixed(2)}</div>
+              {expandedCard === 'cost' && (
+                <div className="fr-card-details">
+                  <p><strong>Cost Breakdown:</strong></p>
+                  <p>• Fuel price: {results.currencySymbol}{results.price.toFixed(2)} per {vehicleType === 'electric' ? 'kWh' : 'liter'}</p>
+                  <p>• Cost per {distanceUnit}: {results.currencySymbol}{results.costPer.toFixed(3)}</p>
+                  <p>• One-way cost: {results.currencySymbol}{(results.cost / (results.isReturn ? 2 : 1)).toFixed(2)}</p>
+                  <p>💡 Carpooling can reduce cost by 50-75%</p>
+                </div>
+              )}
             </div>
 
-            <div className="fr-result-card">
-              <div className="fr-result-icon">📊</div>
-              <div className="fr-result-label">Cost per {distanceUnit}</div>
-              <div className="fr-result-value">{results.currencySymbol}{results.costPer.toFixed(3)}</div>
-            </div>
-
-            <div className="fr-result-card fr-highlight">
+            <div
+              className={`fr-result-card fr-highlight ${expandedCard === 'efficiency' ? 'fr-expanded' : ''}`}
+              onClick={() => setExpandedCard(expandedCard === 'efficiency' ? null : 'efficiency')}
+            >
               <div className="fr-result-icon">⭐</div>
               <div className="fr-result-label">Efficiency Rating</div>
               <div className="fr-result-value">{results.rating}</div>
               <div className="fr-result-verdict">{results.verdictText}</div>
+              {expandedCard === 'efficiency' && (
+                <div className="fr-card-details">
+                  <p><strong>Efficiency Insights:</strong></p>
+                  <p>• Your vehicle: {results.consumption} {vehicleType === 'electric' ? 'kWh/100km' : 'L/100km'}</p>
+                  <p>• Average for {vehicleType}: {vehicleType === 'electric' ? '16' : vehicleType === 'diesel' ? '6.5' : '7.5'} {vehicleType === 'electric' ? 'kWh/100km' : 'L/100km'}</p>
+                  <p>• Potential savings: {results.consumption < 8 ? 'Already efficient!' : 'Switch to hybrid/EV for 40-60% savings'}</p>
+                </div>
+              )}
             </div>
 
-            <div className="fr-result-card">
+            <div
+              className={`fr-result-card ${expandedCard === 'co2' ? 'fr-expanded' : ''}`}
+              onClick={() => setExpandedCard(expandedCard === 'co2' ? null : 'co2')}
+            >
               <div className="fr-result-icon">🌍</div>
               <div className="fr-result-label">CO₂ Emissions</div>
               <div className="fr-result-value">{results.co2.toFixed(2)} kg</div>
+              {expandedCard === 'co2' && (
+                <div className="fr-card-details">
+                  <p><strong>Environmental Impact:</strong></p>
+                  <p>• CO₂ per {distanceUnit}: {(results.co2 / results.distance).toFixed(3)} kg</p>
+                  <p>• Equivalent to: {(results.co2 / 0.4).toFixed(0)} km driven by average car</p>
+                  <p>• Trees needed to offset: {Math.ceil(results.co2 / 21)} trees/year</p>
+                  <p>🌱 {vehicleType === 'electric' ? 'Zero direct emissions - great choice!' : 'Consider carpooling or EVs to reduce impact'}</p>
+                </div>
+              )}
             </div>
           </div>
 

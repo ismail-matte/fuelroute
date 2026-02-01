@@ -9,6 +9,7 @@ import { saveCalculation, getHistory, deleteCalculation, formatDate, type Calcul
 import { downloadImage, shareToWhatsApp, shareViaEmail, sendCalculationToEmail } from '../lib/exportUtils';
 import { trackVisit, trackCalculation, getFormattedStats } from '../lib/analytics';
 import { calculateDistanceWithOSM, openGoogleMapsForDistance, validateLocation } from '../lib/mapsIntegration';
+import { convertFuelPrice, detectCurrencyFromLocation, getCurrencySymbol, exchangeRates } from '../lib/currencyConverter';
 import ChatWidget from '../components/ChatWidget';
 
 const currencySymbols: Record<string, string> = {
@@ -32,6 +33,7 @@ export default function Home() {
   const [manualDistance, setManualDistance] = useState('');
   const [fuelPrice, setFuelPrice] = useState('1.50');
   const [currency, setCurrency] = useState('USD');
+  const [originalCurrency, setOriginalCurrency] = useState('USD');
   const [userRegion, setUserRegion] = useState<string>('global');
   
   const [carSuggestions, setCarSuggestions] = useState<CarModel[]>([]);
@@ -109,6 +111,43 @@ export default function Home() {
     setCarModel('');
     setCarSuggestions([]);
   }, [vehicleType]);
+
+  // Auto-detect currency from locations
+  useEffect(() => {
+    if (locationFrom || locationTo) {
+      const location = locationFrom || locationTo;
+      const detectedCurrency = detectCurrencyFromLocation(location);
+      
+      if (detectedCurrency && detectedCurrency !== currency) {
+        // Convert fuel price to new currency
+        const convertedPrice = convertFuelPrice(
+          parseFloat(fuelPrice),
+          originalCurrency,
+          detectedCurrency
+        );
+        
+        setCurrency(detectedCurrency);
+        setFuelPrice(convertedPrice.toFixed(2));
+        setOriginalCurrency(detectedCurrency);
+      }
+    }
+  }, [locationFrom, locationTo]);
+
+  // Convert results when currency changes
+  useEffect(() => {
+    if (results && currency !== originalCurrency) {
+      const conversionRate = exchangeRates[currency] / exchangeRates[originalCurrency];
+      
+      setResults({
+        ...results,
+        cost: results.cost * conversionRate,
+        costPer: results.costPer * conversionRate,
+        price: results.price * conversionRate,
+        currencySymbol: getCurrencySymbol(currency),
+        currency: currency,
+      });
+    }
+  }, [currency]);
 
   const handleCarSearch = (query: string) => {
     setCarModel(query);
@@ -467,12 +506,15 @@ export default function Home() {
 
             <div className="fr-form-group fr-full-width">
               <label>From (Location A)</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={locationFrom}
                 onChange={(e) => { setLocationFrom(e.target.value); handleLocationSearch(e.target.value, setFromSuggestions); }}
-                placeholder="Enter starting location..."
+                placeholder="e.g., Kampala, Uganda or London, UK"
               />
+              <small className="fr-field-hint">
+                💡 Format: City, Country (e.g., "Nairobi, Kenya" or "New York, USA")
+              </small>
               {fromSuggestions.length > 0 && (
                 <div className="fr-suggestions fr-active">
                   {fromSuggestions.map((city, i) => (
@@ -486,12 +528,15 @@ export default function Home() {
 
             <div className="fr-form-group fr-full-width">
               <label>To (Location B)</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={locationTo}
                 onChange={(e) => { setLocationTo(e.target.value); handleLocationSearch(e.target.value, setToSuggestions); }}
-                placeholder="Enter destination..."
+                placeholder="e.g., Arua, Uganda or Paris, France"
               />
+              <small className="fr-field-hint">
+                💡 Currency auto-detects from country (e.g., "Uganda" → UGX)
+              </small>
               {toSuggestions.length > 0 && (
                 <div className="fr-suggestions fr-active">
                   {toSuggestions.map((city, i) => (

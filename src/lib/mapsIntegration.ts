@@ -122,6 +122,39 @@ export async function calculateDistanceWithOSM(
   origin: string,
   destination: string
 ): Promise<DistanceResult> {
+  // Try Google Maps Distance Matrix API first if API key is available
+  if (GOOGLE_MAPS_API_KEY) {
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(destination)}&key=${GOOGLE_MAPS_API_KEY}`
+      );
+      const data = await response.json();
+
+      if (data.status === 'OK' && data.rows[0].elements[0].status === 'OK') {
+        const element = data.rows[0].elements[0];
+        const distance = element.distance.value / 1000; // Convert meters to km
+        const duration = element.duration.value / 60; // Convert seconds to minutes
+
+        // Get coordinates for map display
+        const originCoords = await geocodeAddress(origin);
+        const destCoords = await geocodeAddress(destination);
+
+        return {
+          distance,
+          duration,
+          found: true,
+          fromLat: originCoords?.lat,
+          fromLon: originCoords?.lng,
+          toLat: destCoords?.lat,
+          toLon: destCoords?.lng
+        };
+      }
+    } catch (error) {
+      console.error('Google Maps Distance Matrix error:', error);
+    }
+  }
+
+  // Fallback to OpenStreetMap
   try {
     // Geocode origin
     const originResponse = await fetch(
@@ -151,7 +184,7 @@ export async function calculateDistanceWithOSM(
           `https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf62481d4867d73e748e09ab8d1c7a870e238&start=${lon1},${lat1}&end=${lon2},${lat2}`
         );
         const orsData = await orsResponse.json();
-        
+
         if (orsData.features && orsData.features.length > 0) {
           distance = orsData.features[0].properties.segments[0].distance / 1000;
           duration = orsData.features[0].properties.segments[0].duration / 60;

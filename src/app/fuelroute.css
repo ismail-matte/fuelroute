@@ -706,6 +706,95 @@
   font-weight: 600;
 }
 
+.fr-donation-card-clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fr-donation-card-clickable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  border-color: #0a66c2;
+}
+
+.fr-select-method {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #1a1a1a;
+  font-weight: 600;
+  margin: 20px 0;
+}
+
+.fr-donation-steps {
+  background: #f0f9ff;
+  border-left: 4px solid #0a66c2;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.fr-donation-steps h3 {
+  color: #0a66c2;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+}
+
+.fr-donation-steps ol,
+.fr-donation-steps ul {
+  margin: 8px 0;
+  padding-left: 24px;
+  color: #4a4a4a;
+  line-height: 1.6;
+}
+
+.fr-donation-steps li {
+  margin: 6px 0;
+}
+
+.fr-donation-details {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 20px 0;
+}
+
+.fr-donation-details p {
+  margin: 8px 0;
+  color: #4a4a4a;
+  font-size: 0.95rem;
+}
+
+.fr-donation-details p strong {
+  color: #0a66c2;
+  font-weight: 600;
+}
+
+.fr-back-btn {
+  background: #6a6a6a;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+  transition: all 0.2s ease;
+}
+
+.fr-back-btn:hover {
+  background: #4a4a4a;
+}
+
+.fr-btn-donate-large {
+  display: block;
+  width: 100%;
+  padding: 16px 24px;
+  font-size: 1.1rem;
+  text-align: center;
+  margin-top: 20px;
+}
+
 .fr-stats {
   background: #f0f9ff;
   border-left: 4px solid #0a66c2;

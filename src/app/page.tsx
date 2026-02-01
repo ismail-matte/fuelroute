@@ -52,6 +52,7 @@ export default function Home() {
   const [stats, setStats] = useState<string>('');
   const [mounted, setMounted] = useState(false);
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
+  const [selectedDonationMethod, setSelectedDonationMethod] = useState<string | null>(null);
 
   const consumptionUnit = vehicleType === 'electric' 
     ? (distanceUnit === 'km' ? 'kWh/100km' : 'kWh/100mi')
@@ -847,83 +848,210 @@ export default function Home() {
 
       {/* Support Modal */}
       {showSupport && (
-        <div className="fr-modal-overlay" onClick={() => setShowSupport(false)}>
+        <div className="fr-modal-overlay" onClick={() => { setShowSupport(false); setSelectedDonationMethod(null); }}>
           <div className="fr-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="fr-modal-close" onClick={() => setShowSupport(false)}>×</button>
-            <h2>💚 Support FuelRoute</h2>
-            <p className="fr-modal-intro">
-              FuelRoute is <strong>100% free</strong> and helps thousands of users plan their journeys worldwide.
-              Your support helps us keep the service running and improve it for everyone!
-            </p>
-            
-            <div className="fr-donation-options">
-              <div className="fr-donation-card">
-                <h3>💳 PayPal</h3>
-                <p>Donate via PayPal (International)</p>
-                <a
-                  href="https://www.paypal.com/paypalme/imatte"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="fr-btn-donate"
-                >
-                  Donate via PayPal
-                </a>
-                <small>Email: imatte@engineer.com</small>
-              </div>
+            <button className="fr-modal-close" onClick={() => { setShowSupport(false); setSelectedDonationMethod(null); }}>×</button>
 
-              <div className="fr-donation-card">
-                <h3>📱 Mobile Money</h3>
-                <p>Send via Mobile Money (Uganda)</p>
-                <div className="fr-phone-number">
-                  <strong>+256 782 475 028</strong>
-                </div>
-                <small>MTN/Airtel Money accepted</small>
-              </div>
+            {!selectedDonationMethod ? (
+              <>
+                <h2>💚 Support FuelRoute</h2>
+                <p className="fr-modal-intro">
+                  FuelRoute is <strong>100% free</strong> and helps thousands of users plan their journeys worldwide.
+                  Your support helps us keep the service running and improve it for everyone!
+                </p>
 
-              <div className="fr-donation-card">
-                <h3>💸 Remitly</h3>
-                <p>Send via Remitly (International to Uganda)</p>
-                <div className="fr-phone-number">
-                  <strong>+256 782 475 028</strong>
-                </div>
-                <small>MTN Mobile Money • Bank Deposit • Cash Pickup</small>
-                <div className="fr-remitly-info">
-                  <p><strong>Delivery Methods:</strong></p>
-                  <ul>
-                    <li>📱 Mobile Money (MTN/Airtel)</li>
-                    <li>🏦 Bank Deposit (Centenary, Equity, ABSA, etc.)</li>
-                    <li>💵 Cash Pickup at partner locations</li>
-                  </ul>
-                  <p><strong>For Cash Pickup:</strong></p>
-                  <ul>
-                    <li>✅ Transfer Reference Number (from sender)</li>
-                    <li>✅ Valid ID (National ID, Passport, Refugee ID)</li>
-                    <li>✅ Name must match ID exactly</li>
-                  </ul>
-                  <p><em>Recipients pay no charges to receive money</em></p>
-                </div>
-              </div>
+                <p className="fr-select-method">Select your preferred donation method:</p>
 
-              <div className="fr-donation-card">
-                <h3>🏦 Bank Transfer</h3>
-                <p>Direct Bank Transfer (International)</p>
-                <div className="fr-bank-details">
-                  <p><strong>Bank:</strong> Absa Bank Uganda Limited</p>
-                  <p><strong>Account Number:</strong> 6003823952</p>
-                  <p><strong>Account Name:</strong> ISMAIL MATTE</p>
-                  <p><strong>SWIFT/BIC:</strong> BARCUGKX</p>
+                <div className="fr-donation-options">
+                  <div className="fr-donation-card fr-donation-card-clickable" onClick={() => setSelectedDonationMethod('paypal')}>
+                    <h3>💳 PayPal</h3>
+                    <p>Donate via PayPal (International)</p>
+                    <small>Click to see details</small>
+                  </div>
+
+                  <div className="fr-donation-card fr-donation-card-clickable" onClick={() => setSelectedDonationMethod('mobilemoney')}>
+                    <h3>📱 Mobile Money</h3>
+                    <p>Send via Mobile Money (Uganda)</p>
+                    <small>Click to see details</small>
+                  </div>
+
+                  <div className="fr-donation-card fr-donation-card-clickable" onClick={() => setSelectedDonationMethod('remitly')}>
+                    <h3>💸 Remitly</h3>
+                    <p>Send via Remitly (International to Uganda)</p>
+                    <small>Click to see details</small>
+                  </div>
+
+                  <div className="fr-donation-card fr-donation-card-clickable" onClick={() => setSelectedDonationMethod('bank')}>
+                    <h3>🏦 Bank Transfer</h3>
+                    <p>Direct Bank Transfer (International)</p>
+                    <small>Click to see details</small>
+                  </div>
                 </div>
-                <small>Use these details for international wire transfers</small>
-              </div>
-            </div>
-            
-            <div className="fr-stats">
-              <p><strong>📊 Usage Stats:</strong> {mounted ? stats : 'Loading...'}</p>
-            </div>
-            
-            <p className="fr-thank-you">
-              🙏 Thank you for supporting sustainable, eco-friendly travel planning!
-            </p>
+
+                <div className="fr-stats">
+                  <p><strong>📊 Usage Stats:</strong> {mounted ? stats : 'Loading...'}</p>
+                </div>
+
+                <p className="fr-thank-you">
+                  🙏 Thank you for supporting sustainable, eco-friendly travel planning!
+                </p>
+              </>
+            ) : (
+              <>
+                <button className="fr-back-btn" onClick={() => setSelectedDonationMethod(null)}>
+                  ← Back to options
+                </button>
+
+                {selectedDonationMethod === 'paypal' && (
+                  <>
+                    <h2>💳 Donate via PayPal</h2>
+                    <p className="fr-modal-intro">
+                      Use PayPal for secure international donations. Any amount is appreciated!
+                    </p>
+
+                    <div className="fr-donation-steps">
+                      <h3>How to donate:</h3>
+                      <ol>
+                        <li>Click the button below to open PayPal</li>
+                        <li>Enter the amount you wish to donate</li>
+                        <li>Complete the payment securely</li>
+                      </ol>
+                    </div>
+
+                    <div className="fr-donation-details">
+                      <p><strong>PayPal Email:</strong> imatte@engineer.com</p>
+                    </div>
+
+                    <a
+                      href="https://www.paypal.com/paypalme/imatte"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="fr-btn-donate fr-btn-donate-large"
+                    >
+                      Open PayPal to Donate
+                    </a>
+                  </>
+                )}
+
+                {selectedDonationMethod === 'mobilemoney' && (
+                  <>
+                    <h2>📱 Donate via Mobile Money</h2>
+                    <p className="fr-modal-intro">
+                      Send money directly via MTN or Airtel Mobile Money in Uganda.
+                    </p>
+
+                    <div className="fr-donation-steps">
+                      <h3>How to donate:</h3>
+                      <ol>
+                        <li>Open your Mobile Money app (MTN or Airtel)</li>
+                        <li>Select "Send Money" or "Transfer"</li>
+                        <li>Enter the phone number: <strong>+256 782 475 028</strong></li>
+                        <li>Enter the amount you wish to send</li>
+                        <li>Enter your PIN to confirm</li>
+                      </ol>
+                    </div>
+
+                    <div className="fr-donation-details">
+                      <p><strong>Phone Number:</strong> +256 782 475 028</p>
+                      <p><strong>Network:</strong> MTN / Airtel</p>
+                      <p><strong>Account Name:</strong> ISMAIL MATTE</p>
+                    </div>
+
+                    <button className="fr-btn-donate fr-btn-donate-large" onClick={() => {
+                      navigator.clipboard.writeText('+256 782 475 028');
+                      alert('Phone number copied to clipboard!');
+                    }}>
+                      📋 Copy Phone Number
+                    </button>
+                  </>
+                )}
+
+                {selectedDonationMethod === 'remitly' && (
+                  <>
+                    <h2>💸 Donate via Remitly</h2>
+                    <p className="fr-modal-intro">
+                      Send money from anywhere in the world to Uganda via Remitly.
+                    </p>
+
+                    <div className="fr-donation-steps">
+                      <h3>How to donate:</h3>
+                      <ol>
+                        <li>Download the Remitly app or visit remitly.com</li>
+                        <li>Create an account or sign in</li>
+                        <li>Select "Send to Uganda"</li>
+                        <li>Enter recipient details:</li>
+                      </ol>
+                      <ul>
+                        <li><strong>Phone:</strong> +256 782 475 028</li>
+                        <li><strong>Name:</strong> ISMAIL MATTE</li>
+                      </ul>
+                      <ol start={5}>
+                        <li>Choose delivery method:</li>
+                      </ol>
+                      <ul>
+                        <li>📱 Mobile Money (MTN/Airtel)</li>
+                        <li>🏦 Bank Deposit (Centenary, Equity, ABSA, etc.)</li>
+                        <li>💵 Cash Pickup at partner locations</li>
+                      </ul>
+                      <ol start={6}>
+                        <li>Enter amount and complete payment</li>
+                      </ol>
+                    </div>
+
+                    <div className="fr-donation-details">
+                      <p><strong>Recipient Phone:</strong> +256 782 475 028</p>
+                      <p><strong>Recipient Name:</strong> ISMAIL MATTE</p>
+                      <p><strong>Country:</strong> Uganda</p>
+                    </div>
+
+                    <a
+                      href="https://www.remitly.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="fr-btn-donate fr-btn-donate-large"
+                    >
+                      Open Remitly to Send
+                    </a>
+                  </>
+                )}
+
+                {selectedDonationMethod === 'bank' && (
+                  <>
+                    <h2>🏦 Donate via Bank Transfer</h2>
+                    <p className="fr-modal-intro">
+                      Send money directly via international wire transfer to our bank account.
+                    </p>
+
+                    <div className="fr-donation-steps">
+                      <h3>How to donate:</h3>
+                      <ol>
+                        <li>Contact your bank or use online banking</li>
+                        <li>Select "International Wire Transfer" or "SWIFT Transfer"</li>
+                        <li>Enter the bank details below</li>
+                        <li>Enter the amount you wish to send</li>
+                        <li>Confirm and complete the transfer</li>
+                      </ol>
+                    </div>
+
+                    <div className="fr-donation-details">
+                      <p><strong>Bank Name:</strong> Absa Bank Uganda Limited</p>
+                      <p><strong>Account Number:</strong> 6003823952</p>
+                      <p><strong>Account Name:</strong> ISMAIL MATTE</p>
+                      <p><strong>SWIFT/BIC Code:</strong> BARCUGKX</p>
+                      <p><strong>Country:</strong> Uganda</p>
+                    </div>
+
+                    <button className="fr-btn-donate fr-btn-donate-large" onClick={() => {
+                      const details = `Bank: Absa Bank Uganda Limited\nAccount Number: 6003823952\nAccount Name: ISMAIL MATTE\nSWIFT/BIC: BARCUGKX`;
+                      navigator.clipboard.writeText(details);
+                      alert('Bank details copied to clipboard!');
+                    }}>
+                      📋 Copy Bank Details
+                    </button>
+                  </>
+                )}
+              </>
+            )}
           </div>
         </div>
       )}

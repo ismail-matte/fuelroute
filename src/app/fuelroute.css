@@ -686,6 +686,26 @@
   font-weight: 500;
 }
 
+.fr-bank-details {
+  margin-top: 12px;
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.fr-bank-details p {
+  margin: 6px 0;
+  color: #4a4a4a;
+  line-height: 1.4;
+}
+
+.fr-bank-details p strong {
+  color: #0a66c2;
+  font-weight: 600;
+}
+
 .fr-stats {
   background: #f0f9ff;
   border-left: 4px solid #0a66c2;

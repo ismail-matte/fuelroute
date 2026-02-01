@@ -903,6 +903,18 @@ export default function Home() {
                   <p><em>Recipients pay no charges to receive money</em></p>
                 </div>
               </div>
+
+              <div className="fr-donation-card">
+                <h3>🏦 Bank Transfer</h3>
+                <p>Direct Bank Transfer (International)</p>
+                <div className="fr-bank-details">
+                  <p><strong>Bank:</strong> Absa Bank Uganda Limited</p>
+                  <p><strong>Account Number:</strong> 6003823952</p>
+                  <p><strong>Account Name:</strong> ISMAIL MATTE</p>
+                  <p><strong>SWIFT/BIC:</strong> BARCUGKX</p>
+                </div>
+                <small>Use these details for international wire transfers</small>
+              </div>
             </div>
             
             <div className="fr-stats">

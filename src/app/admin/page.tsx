@@ -94,12 +94,6 @@ export default function AdminPage() {
           </div>
           <h1>FuelRoute Admin</h1>
           <p>Control Panel</p>
-          
-          <div className="admin-credentials-hint">
-            <p><strong>Default Login:</strong></p>
-            <p>Username: <code>Admin</code></p>
-            <p>Password: <code>1pp5@dm1n</code></p>
-          </div>
 
           {!showPasswordReset ? (
             <>

@@ -19,10 +19,31 @@ export default function AdminPage() {
   const [resetToken, setResetToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
+  // Social media config state
+  const [twitterConfig, setTwitterConfig] = useState({ apiKey: '', apiSecret: '', accessToken: '', accessSecret: '' });
+  const [facebookConfig, setFacebookConfig] = useState({ pageId: '', accessToken: '' });
+  const [linkedinConfig, setLinkedinConfig] = useState({ accessToken: '' });
+  const [instagramConfig, setInstagramConfig] = useState({ username: '', password: '' });
+
   useEffect(() => {
     if (isLoggedIn()) {
       setLoggedIn(true);
-      setConfig(getAdminConfig());
+      const adminConfig = getAdminConfig();
+      setConfig(adminConfig);
+
+      // Load social media config
+      if (adminConfig.socialMedia.twitter) {
+        setTwitterConfig(adminConfig.socialMedia.twitter);
+      }
+      if (adminConfig.socialMedia.facebook) {
+        setFacebookConfig(adminConfig.socialMedia.facebook);
+      }
+      if (adminConfig.socialMedia.linkedin) {
+        setLinkedinConfig(adminConfig.socialMedia.linkedin);
+      }
+      if (adminConfig.socialMedia.instagram) {
+        setInstagramConfig(adminConfig.socialMedia.instagram);
+      }
     }
   }, []);
 
@@ -79,6 +100,50 @@ export default function AdminPage() {
     } else {
       alert('Failed to post. Check your API configuration.');
     }
+  };
+
+  const handleSaveTwitterConfig = () => {
+    updateAdminConfig({
+      socialMedia: {
+        ...config?.socialMedia,
+        twitter: twitterConfig,
+      },
+    });
+    setConfig(getAdminConfig());
+    alert('Twitter configuration saved successfully!');
+  };
+
+  const handleSaveFacebookConfig = () => {
+    updateAdminConfig({
+      socialMedia: {
+        ...config?.socialMedia,
+        facebook: facebookConfig,
+      },
+    });
+    setConfig(getAdminConfig());
+    alert('Facebook configuration saved successfully!');
+  };
+
+  const handleSaveLinkedinConfig = () => {
+    updateAdminConfig({
+      socialMedia: {
+        ...config?.socialMedia,
+        linkedin: linkedinConfig,
+      },
+    });
+    setConfig(getAdminConfig());
+    alert('LinkedIn configuration saved successfully!');
+  };
+
+  const handleSaveInstagramConfig = () => {
+    updateAdminConfig({
+      socialMedia: {
+        ...config?.socialMedia,
+        instagram: instagramConfig,
+      },
+    });
+    setConfig(getAdminConfig());
+    alert('Instagram configuration saved successfully!');
   };
 
   if (!loggedIn) {
@@ -291,31 +356,85 @@ export default function AdminPage() {
             <div className="admin-api-grid">
               <div className="admin-api-card">
                 <h4>🐦 Twitter</h4>
-                <input type="text" placeholder="API Key" className="admin-input" />
-                <input type="text" placeholder="API Secret" className="admin-input" />
-                <input type="text" placeholder="Access Token" className="admin-input" />
-                <input type="text" placeholder="Access Secret" className="admin-input" />
-                <button className="admin-btn-secondary">Save Twitter Config</button>
+                <input
+                  type="text"
+                  placeholder="API Key"
+                  className="admin-input"
+                  value={twitterConfig.apiKey}
+                  onChange={(e) => setTwitterConfig({ ...twitterConfig, apiKey: e.target.value })}
+                />
+                <input
+                  type="text"
+                  placeholder="API Secret"
+                  className="admin-input"
+                  value={twitterConfig.apiSecret}
+                  onChange={(e) => setTwitterConfig({ ...twitterConfig, apiSecret: e.target.value })}
+                />
+                <input
+                  type="text"
+                  placeholder="Access Token"
+                  className="admin-input"
+                  value={twitterConfig.accessToken}
+                  onChange={(e) => setTwitterConfig({ ...twitterConfig, accessToken: e.target.value })}
+                />
+                <input
+                  type="text"
+                  placeholder="Access Secret"
+                  className="admin-input"
+                  value={twitterConfig.accessSecret}
+                  onChange={(e) => setTwitterConfig({ ...twitterConfig, accessSecret: e.target.value })}
+                />
+                <button onClick={handleSaveTwitterConfig} className="admin-btn-secondary">Save Twitter Config</button>
               </div>
 
               <div className="admin-api-card">
                 <h4>📘 Facebook</h4>
-                <input type="text" placeholder="Page ID" className="admin-input" />
-                <input type="text" placeholder="Access Token" className="admin-input" />
-                <button className="admin-btn-secondary">Save Facebook Config</button>
+                <input
+                  type="text"
+                  placeholder="Page ID"
+                  className="admin-input"
+                  value={facebookConfig.pageId}
+                  onChange={(e) => setFacebookConfig({ ...facebookConfig, pageId: e.target.value })}
+                />
+                <input
+                  type="text"
+                  placeholder="Access Token"
+                  className="admin-input"
+                  value={facebookConfig.accessToken}
+                  onChange={(e) => setFacebookConfig({ ...facebookConfig, accessToken: e.target.value })}
+                />
+                <button onClick={handleSaveFacebookConfig} className="admin-btn-secondary">Save Facebook Config</button>
               </div>
 
               <div className="admin-api-card">
                 <h4>💼 LinkedIn</h4>
-                <input type="text" placeholder="Access Token" className="admin-input" />
-                <button className="admin-btn-secondary">Save LinkedIn Config</button>
+                <input
+                  type="text"
+                  placeholder="Access Token"
+                  className="admin-input"
+                  value={linkedinConfig.accessToken}
+                  onChange={(e) => setLinkedinConfig({ ...linkedinConfig, accessToken: e.target.value })}
+                />
+                <button onClick={handleSaveLinkedinConfig} className="admin-btn-secondary">Save LinkedIn Config</button>
               </div>
 
               <div className="admin-api-card">
                 <h4>📸 Instagram</h4>
-                <input type="text" placeholder="Username" className="admin-input" />
-                <input type="password" placeholder="Password" className="admin-input" />
-                <button className="admin-btn-secondary">Save Instagram Config</button>
+                <input
+                  type="text"
+                  placeholder="Username"
+                  className="admin-input"
+                  value={instagramConfig.username}
+                  onChange={(e) => setInstagramConfig({ ...instagramConfig, username: e.target.value })}
+                />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  className="admin-input"
+                  value={instagramConfig.password}
+                  onChange={(e) => setInstagramConfig({ ...instagramConfig, password: e.target.value })}
+                />
+                <button onClick={handleSaveInstagramConfig} className="admin-btn-secondary">Save Instagram Config</button>
               </div>
             </div>
           </div>

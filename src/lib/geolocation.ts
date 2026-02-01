@@ -32,11 +32,17 @@ export const regionMapping: Record<string, RegionalSettings> = {
   'NG': { currency: 'NGN', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 650.00 },
   'KE': { currency: 'KES', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 180.00 },
   'EG': { currency: 'USD', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 0.35 },
-  'MA': { currency: 'EUR', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 1.20 },
-  'TN': { currency: 'EUR', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 0.80 },
-  'GH': { currency: 'USD', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 1.40 },
-  'TZ': { currency: 'USD', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 1.30 },
+  'MA': { currency: 'MAD', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 12.00 },
+  'TN': { currency: 'TND', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 2.40 },
+  'GH': { currency: 'GHS', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 14.50 },
+  'TZ': { currency: 'TZS', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 3100.00 },
   'UG': { currency: 'UGX', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 5200.00 },
+  'ZM': { currency: 'ZMW', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 28.00 },
+  'BW': { currency: 'BWP', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 15.50 },
+  'MW': { currency: 'USD', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 1.45 },
+  'RW': { currency: 'USD', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 1.35 },
+  'ET': { currency: 'USD', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 0.85 },
+  'EG': { currency: 'EGP', region: 'africa', distanceUnit: 'km', fuelPriceEstimate: 11.00 },
   
   // Asia
   'CN': { currency: 'CNY', region: 'asia', distanceUnit: 'km', fuelPriceEstimate: 7.50 },
@@ -53,8 +59,8 @@ export const regionMapping: Record<string, RegionalSettings> = {
   'BD': { currency: 'USD', region: 'asia', distanceUnit: 'km', fuelPriceEstimate: 1.15 },
   
   // Middle East
-  'AE': { currency: 'USD', region: 'middle-east', distanceUnit: 'km', fuelPriceEstimate: 0.60 },
-  'SA': { currency: 'USD', region: 'middle-east', distanceUnit: 'km', fuelPriceEstimate: 0.50 },
+  'AE': { currency: 'AED', region: 'middle-east', distanceUnit: 'km', fuelPriceEstimate: 2.20 },
+  'SA': { currency: 'SAR', region: 'middle-east', distanceUnit: 'km', fuelPriceEstimate: 1.88 },
   'QA': { currency: 'USD', region: 'middle-east', distanceUnit: 'km', fuelPriceEstimate: 0.45 },
   'KW': { currency: 'USD', region: 'middle-east', distanceUnit: 'km', fuelPriceEstimate: 0.35 },
   'OM': { currency: 'USD', region: 'middle-east', distanceUnit: 'km', fuelPriceEstimate: 0.50 },

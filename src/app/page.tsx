@@ -13,7 +13,10 @@ import ChatWidget from '../components/ChatWidget';
 
 const currencySymbols: Record<string, string> = {
   'USD': '$', 'EUR': '€', 'GBP': '£', 'ZAR': 'R', 'AUD': 'A$',
-  'CAD': 'C$', 'JPY': '¥', 'CNY': '¥', 'INR': '₹', 'NGN': '₦', 'KES': 'KSh', 'UGX': 'USh'
+  'CAD': 'C$', 'JPY': '¥', 'CNY': '¥', 'INR': '₹', 'NGN': '₦',
+  'KES': 'KSh', 'UGX': 'USh', 'AED': 'د.إ', 'SAR': 'ر.س',
+  'ZMW': 'ZK', 'BWP': 'P', 'TZS': 'TSh', 'GHS': '₵',
+  'EGP': 'E£', 'MAD': 'د.م.', 'TND': 'د.ت'
 };
 
 export default function Home() {
@@ -556,6 +559,15 @@ export default function Home() {
                 <option value="NGN">NGN - Nigerian Naira (₦)</option>
                 <option value="KES">KES - Kenyan Shilling (KSh)</option>
                 <option value="UGX">UGX - Ugandan Shilling (USh)</option>
+                <option value="AED">AED - UAE Dirham (د.إ)</option>
+                <option value="SAR">SAR - Saudi Riyal (ر.س)</option>
+                <option value="ZMW">ZMW - Zambian Kwacha (ZK)</option>
+                <option value="BWP">BWP - Botswana Pula (P)</option>
+                <option value="TZS">TZS - Tanzanian Shilling (TSh)</option>
+                <option value="GHS">GHS - Ghanaian Cedi (₵)</option>
+                <option value="EGP">EGP - Egyptian Pound (E£)</option>
+                <option value="MAD">MAD - Moroccan Dirham (د.م.)</option>
+                <option value="TND">TND - Tunisian Dinar (د.ت)</option>
               </select>
             </div>
           </div>

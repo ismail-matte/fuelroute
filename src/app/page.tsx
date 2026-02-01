@@ -44,6 +44,8 @@ export default function Home() {
   const [showEmailPopup, setShowEmailPopup] = useState(false);
   const [recipientEmail, setRecipientEmail] = useState('');
   const [isCalculatingDistance, setIsCalculatingDistance] = useState(false);
+  const [stats, setStats] = useState<string>('');
+  const [mounted, setMounted] = useState(false);
 
   const consumptionUnit = vehicleType === 'electric' 
     ? (distanceUnit === 'km' ? 'kWh/100km' : 'kWh/100mi')
@@ -53,8 +55,13 @@ export default function Home() {
 
   // Auto-detect location on mount
   useEffect(() => {
+    setMounted(true);
+    
     // Track visit
     trackVisit();
+    
+    // Load stats
+    setStats(getFormattedStats());
     
     detectUserLocation().then((settings: RegionalSettings) => {
       setCurrency(settings.currency);
@@ -716,7 +723,7 @@ export default function Home() {
             </div>
             
             <div className="fr-stats">
-              <p><strong>📊 Usage Stats:</strong> {getFormattedStats()}</p>
+              <p><strong>📊 Usage Stats:</strong> {mounted ? stats : 'Loading...'}</p>
             </div>
             
             <p className="fr-thank-you">
@@ -783,7 +790,7 @@ export default function Home() {
           <div className="fr-footer-section">
             <h3>FuelRoute</h3>
             <p>Smart journey fuel calculator for the world</p>
-            <p className="fr-stats-small">📊 {getFormattedStats()}</p>
+            {mounted && <p className="fr-stats-small">📊 {stats}</p>}
           </div>
           
           <div className="fr-footer-section">

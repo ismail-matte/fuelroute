@@ -114,7 +114,7 @@ export async function shareImage(elementId: string, calculation: CalculationHist
   const blob = await exportToImage(elementId);
   if (!blob) return;
 
-  if (navigator.share && navigator.canShare) {
+  if (navigator.share && typeof navigator.canShare === 'function' && navigator.canShare()) {
     try {
       const file = new File([blob], 'fuelroute-calculation.png', { type: 'image/png' });
       await navigator.share({

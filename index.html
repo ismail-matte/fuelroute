@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FuelRoute - Journey Fuel Calculator & Planner</title>
+    <meta name="description" content="Calculate fuel costs and consumption for any journey. Plan trips, track expenses, and estimate fuel needs for cars and electric vehicles.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="40" height="40" rx="8" fill="#0a66c2"/>
+                    <path d="M12 28V16L20 12L28 16V28H24V20H16V28H12Z" fill="white"/>
+                    <circle cx="20" cy="24" r="2" fill="#0a66c2"/>
+                </svg>
+                <h1>FuelRoute</h1>
+            </div>
+            <p class="tagline">Smart Journey Fuel Calculator</p>
+            <p class="description">Calculate fuel costs, plan your trips, and track consumption for any vehicle - from basic cars to electric vehicles. Perfect for individuals, businesses, and fleet management.</p>
+        </header>
+
+        <!-- Input Section -->
+        <section class="input-section">
+            <div class="card">
+                <h2>Plan Your Journey</h2>
+                
+                <div class="form-grid">
+                    <!-- Vehicle Selection -->
+                    <div class="form-group full-width">
+                        <label for="vehicleType">Vehicle Type</label>
+                        <select id="vehicleType">
+                            <option value="petrol">Petrol/Gasoline</option>
+                            <option value="diesel">Diesel</option>
+                            <option value="electric">Electric</option>
+                            <option value="hybrid">Hybrid</option>
+                        </select>
+                    </div>
+
+                    <!-- Car Model Search -->
+                    <div class="form-group full-width">
+                        <label for="carModel">Car Model (Optional)</label>
+                        <input type="text" id="carModel" placeholder="e.g., Toyota Corolla, Tesla Model 3...">
+                        <div id="carSuggestions" class="suggestions"></div>
+                    </div>
+
+                    <!-- Engine Size -->
+                    <div class="form-group">
+                        <label for="engineSize">Engine Size (L)</label>
+                        <input type="number" id="engineSize" placeholder="e.g., 1.6, 2.0" step="0.1" min="0.5" max="8.0" value="1.6">
+                    </div>
+
+                    <!-- Fuel Consumption -->
+                    <div class="form-group">
+                        <label for="fuelConsumption">Consumption (<span id="consumptionUnit">L/100km</span>)</label>
+                        <input type="number" id="fuelConsumption" placeholder="e.g., 7.5" step="0.1" min="1" max="50" value="7.5">
+                    </div>
+
+                    <!-- Distance Unit Toggle -->
+                    <div class="form-group">
+                        <label for="distanceUnit">Distance Unit</label>
+                        <select id="distanceUnit">
+                            <option value="km">Kilometers</option>
+                            <option value="miles">Miles</option>
+                        </select>
+                    </div>
+
+                    <!-- Journey Type -->
+                    <div class="form-group">
+                        <label for="journeyType">Journey Type</label>
+                        <select id="journeyType">
+                            <option value="oneway">One Way</option>
+                            <option value="return">Return Trip</option>
+                        </select>
+                    </div>
+
+                    <!-- Location From -->
+                    <div class="form-group full-width">
+                        <label for="locationFrom">From (Location A)</label>
+                        <input type="text" id="locationFrom" placeholder="Enter starting location...">
+                        <div id="fromSuggestions" class="suggestions"></div>
+                    </div>
+
+                    <!-- Location To -->
+                    <div class="form-group full-width">
+                        <label for="locationTo">To (Location B)</label>
+                        <input type="text" id="locationTo" placeholder="Enter destination...">
+                        <div id="toSuggestions" class="suggestions"></div>
+                    </div>
+
+                    <!-- Via Location (Optional) -->
+                    <div class="form-group full-width">
+                        <label for="locationVia">Via (Location C - Optional)</label>
+                        <input type="text" id="locationVia" placeholder="Enter intermediate stop...">
+                        <div id="viaSuggestions" class="suggestions"></div>
+                    </div>
+
+                    <!-- Manual Distance Override -->
+                    <div class="form-group">
+                        <label for="manualDistance">Or Enter Distance Manually</label>
+                        <input type="number" id="manualDistance" placeholder="Distance" step="1" min="0">
+                    </div>
+
+                    <!-- Fuel Price -->
+                    <div class="form-group">
+                        <label for="fuelPrice">Fuel Price per <span id="priceUnit">Liter</span></label>
+                        <input type="number" id="fuelPrice" placeholder="e.g., 1.50" step="0.01" min="0" value="1.50">
+                    </div>
+
+                    <!-- Currency -->
+                    <div class="form-group full-width">
+                        <label for="currency">Currency</label>
+                        <select id="currency">
+                            <option value="USD">USD - US Dollar ($)</option>
+                            <option value="EUR">EUR - Euro (€)</option>
+                            <option value="GBP">GBP - British Pound (£)</option>
+                            <option value="ZAR">ZAR - South African Rand (R)</option>
+                            <option value="AUD">AUD - Australian Dollar (A$)</option>
+                            <option value="CAD">CAD - Canadian Dollar (C$)</option>
+                            <option value="JPY">JPY - Japanese Yen (¥)</option>
+                            <option value="CNY">CNY - Chinese Yuan (¥)</option>
+                            <option value="INR">INR - Indian Rupee (₹)</option>
+                            <option value="NGN">NGN - Nigerian Naira (₦)</option>
+                            <option value="KES">KES - Kenyan Shilling (KSh)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="calculateBtn" class="btn-primary">Calculate Journey Cost</button>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section" id="resultsSection">
+            <h2>Journey Analysis</h2>
+            
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-icon">📏</div>
+                    <div class="result-label">Total Distance</div>
+                    <div class="result-value" id="totalDistance">-</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-icon">⛽</div>
+                    <div class="result-label">Fuel Needed</div>
+                    <div class="result-value" id="fuelNeeded">-</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-icon">💰</div>
+                    <div class="result-label">Total Cost</div>
+                    <div class="result-value" id="totalCost">-</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-icon">📊</div>
+                    <div class="result-label">Cost per <span id="costPerUnit">km</span></div>
+                    <div class="result-value" id="costPerDistance">-</div>
+                </div>
+
+                <div class="result-card highlight">
+                    <div class="result-icon">⭐</div>
+                    <div class="result-label">Efficiency Rating</div>
+                    <div class="result-value" id="efficiencyRating">-</div>
+                    <div class="result-verdict" id="verdict">-</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-icon">🌍</div>
+                    <div class="result-label">CO₂ Emissions</div>
+                    <div class="result-value" id="co2Emissions">-</div>
+                </div>
+            </div>
+
+            <!-- Journey Summary -->
+            <div class="card summary-card">
+                <h3>Journey Summary</h3>
+                <div id="journeySummary" class="journey-summary">
+                    <p>Enter your journey details above to see the complete analysis.</p>
+                </div>
+            </div>
+
+            <!-- Export Options -->
+            <div class="export-actions">
+                <button id="exportPDF" class="btn-secondary">📄 Export Report</button>
+                <button id="shareBtn" class="btn-secondary">🔗 Share Journey</button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 FuelRoute. Helping you plan smarter journeys.</p>
+            <p class="footer-note">All calculations are estimates. Actual fuel consumption may vary based on driving conditions, vehicle condition, and driving style.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -900,6 +900,7 @@ export default function Home() {
             <button onClick={() => setShowSupport(true)} className="fr-footer-link">💚 Support Us</button>
             <button onClick={() => setShowContact(true)} className="fr-footer-link">📧 Contact</button>
             <button onClick={() => setShowHistory(true)} className="fr-footer-link">📊 History</button>
+            <a href="/admin" className="fr-footer-link">🎛️ Admin Panel</a>
           </div>
           
           <div className="fr-footer-section">

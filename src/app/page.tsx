@@ -7,6 +7,7 @@ import { detectUserLocation, type RegionalSettings } from '../lib/geolocation';
 import { searchCities, type City } from '../lib/locationService';
 import { saveCalculation, getHistory, deleteCalculation, formatDate, type CalculationHistory } from '../lib/historyManager';
 import { downloadImage, shareToWhatsApp, shareViaEmail } from '../lib/exportUtils';
+import { trackVisit, trackCalculation, getFormattedStats } from '../lib/analytics';
 
 const currencySymbols: Record<string, string> = {
   'USD': '$', 'EUR': '€', 'GBP': '£', 'ZAR': 'R', 'AUD': 'A$',
@@ -36,6 +37,8 @@ export default function Home() {
   const [results, setResults] = useState<any>(null);
   const [history, setHistory] = useState<CalculationHistory[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
+  const [showContact, setShowContact] = useState(false);
 
   const consumptionUnit = vehicleType === 'electric' 
     ? (distanceUnit === 'km' ? 'kWh/100km' : 'kWh/100mi')
@@ -45,6 +48,9 @@ export default function Home() {
 
   // Auto-detect location on mount
   useEffect(() => {
+    // Track visit
+    trackVisit();
+    
     detectUserLocation().then((settings: RegionalSettings) => {
       setCurrency(settings.currency);
       setDistanceUnit(settings.distanceUnit);
@@ -118,6 +124,9 @@ export default function Home() {
   };
 
   const calculateJourney = () => {
+    // Track calculation
+    trackCalculation();
+    
     const consumption = parseFloat(fuelConsumption) || 7.5;
     const price = parseFloat(fuelPrice) || 1.50;
     const currencySymbol = currencySymbols[currency];
@@ -587,9 +596,132 @@ export default function Home() {
         </section>
       )}
 
+      {/* Support Modal */}
+      {showSupport && (
+        <div className="fr-modal-overlay" onClick={() => setShowSupport(false)}>
+          <div className="fr-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="fr-modal-close" onClick={() => setShowSupport(false)}>×</button>
+            <h2>💚 Support FuelRoute</h2>
+            <p className="fr-modal-intro">
+              FuelRoute is <strong>100% free</strong> and helps thousands of users plan their journeys worldwide.
+              Your support helps us keep the service running and improve it for everyone!
+            </p>
+            
+            <div className="fr-donation-options">
+              <div className="fr-donation-card">
+                <h3>💳 PayPal</h3>
+                <p>Donate via PayPal (International)</p>
+                <a
+                  href="https://www.paypal.com/paypalme/imatte"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fr-btn-donate"
+                >
+                  Donate via PayPal
+                </a>
+                <small>Email: imatte@engineer.com</small>
+              </div>
+              
+              <div className="fr-donation-card">
+                <h3>📱 Mobile Money</h3>
+                <p>Send via Mobile Money (Uganda)</p>
+                <div className="fr-phone-number">
+                  <strong>+256 782 475 028</strong>
+                </div>
+                <small>MTN/Airtel Money accepted</small>
+              </div>
+            </div>
+            
+            <div className="fr-stats">
+              <p><strong>📊 Usage Stats:</strong> {getFormattedStats()}</p>
+            </div>
+            
+            <p className="fr-thank-you">
+              🙏 Thank you for supporting sustainable, eco-friendly travel planning!
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Contact Modal */}
+      {showContact && (
+        <div className="fr-modal-overlay" onClick={() => setShowContact(false)}>
+          <div className="fr-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="fr-modal-close" onClick={() => setShowContact(false)}>×</button>
+            <h2>📧 Contact Us</h2>
+            <p className="fr-modal-intro">
+              Have questions, suggestions, or need support? We'd love to hear from you!
+            </p>
+            
+            <div className="fr-contact-info">
+              <div className="fr-contact-item">
+                <h3>📧 General Inquiries</h3>
+                <a href="mailto:info@tech-center.com" className="fr-contact-link">
+                  info@tech-center.com
+                </a>
+              </div>
+              
+              <div className="fr-contact-item">
+                <h3>📱 WhatsApp</h3>
+                <a
+                  href="https://wa.me/256782475028"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fr-contact-link"
+                >
+                  +256 782 475 028
+                </a>
+              </div>
+              
+              <div className="fr-contact-item">
+                <h3>💼 Business & Partnerships</h3>
+                <a href="mailto:imatte@engineer.com" className="fr-contact-link">
+                  imatte@engineer.com
+                </a>
+              </div>
+            </div>
+            
+            <div className="fr-quick-contact">
+              <h3>Quick Message</h3>
+              <p>Send us a message directly:</p>
+              <a
+                href="mailto:info@tech-center.com?subject=FuelRoute Inquiry&body=Hello FuelRoute Team,%0D%0A%0D%0AI have a question about..."
+                className="fr-btn-secondary"
+              >
+                📧 Send Email
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       <footer className="fr-footer">
-        <p>&copy; 2024 FuelRoute. Helping you plan smarter journeys.</p>
-        <p className="fr-footer-note">All calculations are estimates. Actual fuel consumption may vary based on driving conditions, vehicle condition, and driving style.</p>
+        <div className="fr-footer-content">
+          <div className="fr-footer-section">
+            <h3>FuelRoute</h3>
+            <p>Smart journey fuel calculator for the world</p>
+            <p className="fr-stats-small">📊 {getFormattedStats()}</p>
+          </div>
+          
+          <div className="fr-footer-section">
+            <h3>Quick Links</h3>
+            <button onClick={() => setShowSupport(true)} className="fr-footer-link">💚 Support Us</button>
+            <button onClick={() => setShowContact(true)} className="fr-footer-link">📧 Contact</button>
+            <button onClick={() => setShowHistory(true)} className="fr-footer-link">📊 History</button>
+          </div>
+          
+          <div className="fr-footer-section">
+            <h3>Connect</h3>
+            <a href="mailto:info@tech-center.com" className="fr-footer-link">Email Us</a>
+            <a href="https://wa.me/256782475028" target="_blank" rel="noopener noreferrer" className="fr-footer-link">WhatsApp</a>
+            <a href="https://www.paypal.com/paypalme/imatte" target="_blank" rel="noopener noreferrer" className="fr-footer-link">Donate</a>
+          </div>
+        </div>
+        
+        <div className="fr-footer-bottom">
+          <p>&copy; 2024 FuelRoute. Helping you plan smarter, greener journeys.</p>
+          <p className="fr-footer-note">All calculations are estimates. Actual fuel consumption may vary based on driving conditions, vehicle condition, and driving style.</p>
+        </div>
       </footer>
     </div>
   );

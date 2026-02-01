@@ -698,6 +698,21 @@ export default function Home() {
 
           <div className="fr-export-actions">
             <button
+              className="fr-btn-new-analysis"
+              onClick={() => {
+                setResults(null);
+                setLocationFrom('');
+                setLocationTo('');
+                setLocationVia('');
+                setManualDistance('');
+                setCarModel('');
+                setExpandedCard(null);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            >
+              🔄 New Analysis
+            </button>
+            <button
               className="fr-btn-secondary"
               onClick={() => downloadImage('results-export', `fuelroute-${Date.now()}`)}
             >

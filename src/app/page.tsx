@@ -100,6 +100,12 @@ export default function Home() {
     }
   }, [vehicleType, engineSize, carModel]);
 
+  // Clear car model when vehicle type changes (so user can search fresh)
+  useEffect(() => {
+    setCarModel('');
+    setCarSuggestions([]);
+  }, [vehicleType]);
+
   const handleCarSearch = (query: string) => {
     setCarModel(query);
     if (query.length < 2) {

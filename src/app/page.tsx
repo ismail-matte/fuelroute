@@ -88,11 +88,37 @@ export default function Home() {
   
   const [results, setResults] = useState<any>(null);
 
-  const consumptionUnit = vehicleType === 'electric' 
+  const consumptionUnit = vehicleType === 'electric'
     ? (distanceUnit === 'km' ? 'kWh/100km' : 'kWh/100mi')
     : (distanceUnit === 'km' ? 'L/100km' : 'MPG');
   
   const priceUnit = vehicleType === 'electric' ? 'kWh' : 'Liter';
+
+  // Auto-estimate consumption based on vehicle type and engine size
+  const estimateConsumption = (vType: string, engine: string) => {
+    const engineNum = parseFloat(engine) || 1.6;
+    let estimated = 0;
+    
+    if (vType === 'electric') {
+      estimated = 15.0; // Average EV consumption
+    } else if (vType === 'diesel') {
+      estimated = 4.5 + (engineNum * 1.2); // Diesel formula
+    } else if (vType === 'hybrid') {
+      estimated = 4.0 + (engineNum * 0.8); // Hybrid formula
+    } else { // petrol
+      estimated = 5.0 + (engineNum * 1.5); // Petrol formula
+    }
+    
+    return estimated.toFixed(1);
+  };
+
+  // Update consumption when vehicle type or engine size changes
+  useEffect(() => {
+    if (!carModel) { // Only auto-estimate if no car model is selected
+      const estimated = estimateConsumption(vehicleType, engineSize);
+      setFuelConsumption(estimated);
+    }
+  }, [vehicleType, engineSize, carModel]);
 
   const handleCarSearch = (query: string) => {
     setCarModel(query);
@@ -278,8 +304,27 @@ export default function Home() {
             </div>
 
             <div className="fr-form-group">
-              <label>Consumption ({consumptionUnit})</label>
-              <input type="number" value={fuelConsumption} onChange={(e) => setFuelConsumption(e.target.value)} step="0.1" min="1" max="50" />
+              <label>
+                Consumption ({consumptionUnit})
+                <span className="fr-help-text"> - Auto-estimated</span>
+              </label>
+              <div className="fr-input-with-help">
+                <input type="number" value={fuelConsumption} onChange={(e) => setFuelConsumption(e.target.value)} step="0.1" min="1" max="50" />
+                <button
+                  type="button"
+                  className="fr-help-btn"
+                  onClick={() => {
+                    const estimated = estimateConsumption(vehicleType, engineSize);
+                    setFuelConsumption(estimated);
+                  }}
+                  title="Click to auto-estimate consumption"
+                >
+                  ?
+                </button>
+              </div>
+              <small className="fr-field-hint">
+                💡 Typical: Petrol 6-10, Diesel 5-8, Electric 14-20 kWh/100km
+              </small>
             </div>
 
             <div className="fr-form-group">
